@@ -1,0 +1,41 @@
+{
+  "name": "gitpulse",
+  "version": "1.0.0",
+  "description": "A CLI tool for synchronizing development activities to a personal GitHub repository discreetly and confidentially.",
+  "main": "dist/cli.js",
+  "bin": {
+    "gitpulse": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/cli.js",
+    "dev": "ts-node src/cli.ts",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/gitpulse.git"
+  },
+  "keywords": [
+    "git",
+    "cli",
+    "github",
+    "synchronization",
+    "privacy"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^9.0.0",
+    "simple-git": "^2.40.0",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.0.0",
+    "@types/node": "^16.0.0",
+    "@types/winston": "^2.4.4",
+    "jest": "^27.0.0",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.5.0"
+  }
+}

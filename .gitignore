@@ -1,0 +1,28 @@
+# Node modules
+node_modules/
+
+# Build output
+dist/
+build/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+
+# VSCode settings
+.vscode/
+
+# Jest coverage
+coverage/
+
+# gitpulse
+gitpulse.log
+gitpulse.config.json
+gitpulse-logs/
