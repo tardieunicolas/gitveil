@@ -15,16 +15,16 @@ function findConfigAndMirrorPath(): { mirrorPath: string, configDir: string } {
         try {
             const raw = fs.readFileSync(configPath, 'utf-8');
             const config = JSON.parse(raw);
-            const mirrorRepoPath = config.mirrorRepoPath || './gitpulse-logs';
+            const mirrorRepoPath = config.mirrorRepoPath || './records-folder';
             return { mirrorPath: mirrorRepoPath, configDir: projectRoot };
         } catch {}
     }
     // fallback : racine projet
-    return { mirrorPath: './gitpulse-logs', configDir: projectRoot };
+    return { mirrorPath: './records-folder', configDir: projectRoot };
 }
 
 function resolveTargetPath(target?: string): string {
-    if (!target || target === './gitpulse-logs') {
+    if (!target || target === './records-folder') {
         const { mirrorPath, configDir } = findConfigAndMirrorPath();
         // Si mirrorPath est déjà absolu, on le garde, sinon on le résout depuis le dossier de la config
         return path.isAbsolute(mirrorPath) ? mirrorPath : path.join(configDir, mirrorPath);

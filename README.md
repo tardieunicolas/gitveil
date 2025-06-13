@@ -31,8 +31,8 @@ Sélectionnez l’email à utiliser pour filtrer l’activité Git :
     julien.dupont@autre.com
     Saisir manuellement
 
-Chemin du dépôt miroir (par défaut : ./gitpulse-logs) :
-  ❯ ./gitpulse-logs
+Chemin du dépôt miroir (par défaut : ./records-folder) :
+  ❯ ./records-folder
 
 Voulez-vous initialiser le dépôt miroir maintenant ?
   ❯ Oui
@@ -111,7 +111,7 @@ Date:   2024-06-06
 
 ## 🗂️ Structure du dépôt miroir
 
-**Nom par défaut :** `gitpulse-logs`
+**Nom par défaut :** `records-folder`
 
 **Contenu :**
 - `README.md` avec compteur

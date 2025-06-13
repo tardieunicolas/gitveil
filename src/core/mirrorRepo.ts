@@ -4,7 +4,7 @@ export class MirrorRepo {
     private repoPath: string;
     private config: any;
 
-    constructor(repoPath: string = './gitpulse-logs', config: any = {}) {
+    constructor(repoPath: string = './records-folder', config: any = {}) {
         this.repoPath = repoPath;
         this.config = config;
     }

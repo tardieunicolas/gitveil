@@ -21,7 +21,7 @@ function loadCurrentConfig(): Config {
     }
     return {
         email: '',
-        mirrorRepoPath: './gitpulse-logs',
+        mirrorRepoPath: './records-folder',
         since: '24h',
     };
 }

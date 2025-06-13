@@ -8,7 +8,7 @@ interface PushOptions {
 }
 
 function resolveTargetPath(target?: string): string {
-  if (!target || target === "./gitpulse-logs") {
+  if (!target || target === "./records-folder") {
     let currentDir = process.cwd();
     let rootFound = false;
     while (!rootFound) {
@@ -20,7 +20,7 @@ function resolveTargetPath(target?: string): string {
         currentDir = parentDir;
       }
     }
-    return path.join(currentDir, "gitpulse-logs");
+    return path.join(currentDir, "records-folder");
   }
   return target;
 }
@@ -68,8 +68,8 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     log("info", "📄 README.md created in mirrorRepoPath.");
   }
 
-  // 3. Extract all dates present in the JSON files in the gitpulse-logs folder
-  const logsDir = path.join(projectRoot, "gitpulse-logs");
+  // 3. Extract all dates present in the JSON files in the records-folder folder
+  const logsDir = path.join(projectRoot, "records-folder");
   if (!fs.existsSync(logsDir)) {
     log("error", `❌ Logs directory not found: ${logsDir}`);
     return;

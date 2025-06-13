@@ -25,4 +25,4 @@ coverage/
 # gitpulse
 gitpulse.log
 gitpulse.config.json
-gitpulse-logs/
+records-folder/

@@ -17,7 +17,7 @@ program
   .command('init')
   .description('Initialize the mirror repository')
   .option('--email <email>', 'Git email to filter activity')
-  .option('--target <path>', 'Path to the mirror repository', './gitpulse-logs')
+  .option('--target <path>', 'Path to the mirror repository', './records-folder')
   .action((options) => initializeMirror(options.email, options.target));
 
 program
@@ -26,20 +26,20 @@ program
   .option('--email <email>', 'Git email to filter activity')
   .option('--since <since>', 'Time limit (e.g., 30d)', '24h')
   .option('--dry-run', 'Show commits without creating them')
-  .option('--target <path>', 'Path to the mirror repository', './gitpulse-logs')
+  .option('--target <path>', 'Path to the mirror repository', './records-folder')
   .action((options) => recordActivity(options));
 
 program
   .command('push')
   .description('Push anonymized commits to GitHub')
-  .option('--target <path>', 'Path to the mirror repository', './gitpulse-logs')
+  .option('--target <path>', 'Path to the mirror repository', './records-folder')
   .option('--since-last-sync', 'Push only commits since last sync')
   .action((options) => pushCommits(options));
 
 program
   .command('status')
   .description('Check the synchronization status of the mirror repository')
-  .option('--target <path>', 'Path to the mirror repository', './gitpulse-logs')
+  .option('--target <path>', 'Path to the mirror repository', './records-folder')
   .action((options) => checkStatus(options));
 
 program

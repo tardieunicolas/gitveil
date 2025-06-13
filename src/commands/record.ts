@@ -15,11 +15,11 @@ export async function recordActivity(options: RecordOptions): Promise<void> {
     email,
     since = "24h",
     dryRun = false,
-    target = "./gitpulse-logs",
+    target = "./records-folder",
   } = options;
-  // Always resolve gitpulse-logs relative to the project root
+  // Always resolve records-folder relative to the project root
   const projectRoot = path.resolve(__dirname, "../../");
-  target = path.join(projectRoot, "gitpulse-logs");
+  target = path.join(projectRoot, "records-folder");
   try {
     let authorEmail = email;
     let filterByEmail = true;
