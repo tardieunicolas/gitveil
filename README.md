@@ -138,8 +138,12 @@ Soigne la section “Installation” avec un encart “En un clic”.
 
 ---
 
-## 📦 Installation *(à venir)*
+## 📦 Installation 
 
 ```bash
-npm install -g gitpulse
+npm i
+
+npm run build
+
+npm install -g
 ```
