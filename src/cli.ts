@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import { initializeMirror } from './commands/init';
 import { recordActivity } from './commands/record';
 import { pushCommits } from './commands/push';
 import { checkStatus } from './commands/status';
