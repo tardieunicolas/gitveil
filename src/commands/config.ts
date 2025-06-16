@@ -21,8 +21,9 @@ function loadCurrentConfig(): Config {
     }
     return {
         email: '',
+        name: '',
         mirrorRepoPath: './records-folder',
-        since: '24h',
+
     };
 }
 

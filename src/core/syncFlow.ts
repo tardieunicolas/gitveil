@@ -2,10 +2,10 @@ import { ActivityExtractor } from './activityExtractor';
 import { MirrorRepo } from './mirrorRepo';
 import { CommitGenerator } from './commitGenerator';
 
-export async function executeSyncFlow(email: string, targetRepo: string, since: string): Promise<void> {
+export async function executeSyncFlow(email: string, targetRepo: string): Promise<void> {
     // Step 1: Extract activity related to the specified email
     const activityExtractor = new ActivityExtractor(email);
-    const activities = await activityExtractor.extractActivity(since);
+    const activities = await activityExtractor.extractActivity();
 
     // Step 2: Prepare the mirror repository
     const mirrorRepo = new MirrorRepo(targetRepo, { email });

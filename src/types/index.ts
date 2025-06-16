@@ -7,11 +7,10 @@ export interface Commit {
 }
 
 export interface Config {
+   name: string;
     email: string;
     mirrorRepoPath: string;
-    since: string;
 }
-
 export interface Activity {
     commits: Commit[];
     timestamp: Date;

@@ -4,7 +4,6 @@ import { log } from "../utils/logger";
 
 interface PushOptions {
   target?: string;
-  sinceLastSync?: boolean;
 }
 
 function resolveTargetPath(target?: string): string {

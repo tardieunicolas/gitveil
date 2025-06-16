@@ -4,7 +4,6 @@ import { initializeMirror } from './commands/init';
 import { recordActivity } from './commands/record';
 import { pushCommits } from './commands/push';
 import { checkStatus } from './commands/status';
-import { setConfig } from './commands/config';
 
 const program = new Command();
 
@@ -24,7 +23,6 @@ program
   .command('record')
   .description('Record Git activity based on filters')
   .option('--email <email>', 'Git email to filter activity')
-  .option('--since <since>', 'Time limit (e.g., 30d)', '24h')
   .option('--dry-run', 'Show commits without creating them')
   .option('--target <path>', 'Path to the mirror repository', './records-folder')
   .action((options) => recordActivity(options));
@@ -33,7 +31,6 @@ program
   .command('push')
   .description('Push anonymized commits to GitHub')
   .option('--target <path>', 'Path to the mirror repository', './records-folder')
-  .option('--since-last-sync', 'Push only commits since last sync')
   .action((options) => pushCommits(options));
 
 program

@@ -5,7 +5,6 @@ import { log } from "../utils/logger";
 
 interface RecordOptions {
   email: string;
-  since?: string;
   dryRun?: boolean;
   target?: string;
 }
@@ -13,7 +12,6 @@ interface RecordOptions {
 export async function recordActivity(options: RecordOptions): Promise<void> {
   let {
     email,
-    since = "24h",
     dryRun = false,
     target = "./records-folder",
   } = options;
