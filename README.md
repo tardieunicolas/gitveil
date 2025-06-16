@@ -60,9 +60,15 @@ npm install -g
 
 ---
 
-## Capture d’écran (optionnel)
+## Capture d’écran
 
-Ajoutez ici un visuel du graph de contributions avant/après, ou une animation GIF du flow GitPulse.
+Avant :
+
+![Avant](img/gitpulse-demo-2024.png)
+
+Après :
+
+![Après](img/gitpulse-demo-2024-after.png)
 
 ---
 
