@@ -24,5 +24,5 @@ coverage/
 
 # gitpulse
 gitpulse.log
-gitpulse.config.json
+gitpulse.config-private.json
 records-folder/

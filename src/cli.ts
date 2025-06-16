@@ -13,13 +13,6 @@ program
   .version('1.0.0');
 
 program
-  .command('init')
-  .description('Initialize the mirror repository')
-  .option('--email <email>', 'Git email to filter activity')
-  .option('--target <path>', 'Path to the mirror repository', './records-folder')
-  .action((options) => initializeMirror(options.email, options.target));
-
-program
   .command('record')
   .description('Record Git activity based on filters')
   .option('--email <email>', 'Git email to filter activity')
