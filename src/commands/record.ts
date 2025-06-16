@@ -10,11 +10,7 @@ interface RecordOptions {
 }
 
 export async function recordActivity(options: RecordOptions): Promise<void> {
-  let {
-    email,
-    dryRun = false,
-    target = "./records-folder",
-  } = options;
+  let { email, dryRun = false, target = "./records-folder" } = options;
   // Always resolve records-folder relative to the project root
   const projectRoot = path.resolve(__dirname, "../../");
   target = path.join(projectRoot, "records-folder");
@@ -25,7 +21,25 @@ export async function recordActivity(options: RecordOptions): Promise<void> {
       try {
         authorEmail = execSync("git config user.email").toString().trim();
       } catch (e) {
-        // ignore, will fallback to all commits
+        log(
+          "warn",
+          `Failed to get local git user.email: ${
+            e instanceof Error ? e.message : String(e)
+          }`
+        );
+        try {
+          authorEmail = execSync("git config user.email --global")
+            .toString()
+            .trim();
+          log("info", `Using global git user.email: ${authorEmail}`);
+        } catch (e2) {
+          log(
+            "warn",
+            `Failed to get global git user.email: ${
+              e2 instanceof Error ? e2.message : String(e2)
+            }`
+          );
+        }
       }
     }
     if (!authorEmail) {
@@ -75,8 +89,6 @@ export async function recordActivity(options: RecordOptions): Promise<void> {
       fs.mkdirSync(target, { recursive: true });
     }
     fs.writeFileSync(outputFile, JSON.stringify(commitDates, null, 2), "utf-8");
-    // 5. Log summary
-    const uniqueDays = new Set(commitDates.map((d) => d.slice(0, 10)));
     log("info", `✅ Commits successfully exported for email: ${authorEmail}`);
     log("info", `🎉 JSON file generated: ${outputFile}`);
   } catch (error: any) {
