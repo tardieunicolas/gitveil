@@ -23,7 +23,6 @@ function loadCurrentConfig(): Config {
         email: '',
         name: '',
         mirrorRepoPath: './records-folder',
-
     };
 }
 

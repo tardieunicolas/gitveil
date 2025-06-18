@@ -6,24 +6,6 @@ interface PushOptions {
   target?: string;
 }
 
-function resolveTargetPath(target?: string): string {
-  if (!target || target === "./records-folder") {
-    let currentDir = process.cwd();
-    let rootFound = false;
-    while (!rootFound) {
-      if (fs.existsSync(path.join(currentDir, "package.json"))) {
-        rootFound = true;
-      } else {
-        const parentDir = path.dirname(currentDir);
-        if (parentDir === currentDir) break;
-        currentDir = parentDir;
-      }
-    }
-    return path.join(currentDir, "records-folder");
-  }
-  return target;
-}
-
 function clearRecordsFolder(recordsFolderPath: string) {
   if (!fs.existsSync(recordsFolderPath)) return;
   const files = fs.readdirSync(recordsFolderPath);
