@@ -231,8 +231,9 @@ export function pushCommits(options: PushOptions): void {
     } else {
       execSync(commit.cmd, { env: commit.env });
     }
+    console.log()
     process.stdout.write(
-      `\rCommit ${commit.idx + 1}/${totalToCommit} (${Math.round(
+      `\r > Commit created ${commit.idx + 1}/${totalToCommit} (${Math.round(
         ((commit.idx + 1) / totalToCommit) * 100
       )}%)`
     );
