@@ -1,7 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
 import { log } from "../utils/logger";
-import { exec, execSync } from "child_process";
+import { execSync } from "child_process";
+import QRCode from "qrcode";
 
 // Options pour la commande push (peut être étendu pour d'autres paramètres)
 interface PushOptions {
@@ -24,7 +25,7 @@ function clearRecordsFolder(recordsFolderPath: string) {
 }
 
 // Fonction principale pour pousser les commits anonymisés
-export function pushCommits(options: PushOptions): void {
+export async function pushCommits(options: PushOptions): Promise<void> {
   // Recherche la racine du projet GitPulse (pour toujours utiliser la bonne config)
   let projectRoot = path.dirname(require.main?.filename || process.argv[1]);
   while (!fs.existsSync(path.join(projectRoot, "gitpulse.config.json"))) {
@@ -153,6 +154,12 @@ export function pushCommits(options: PushOptions): void {
       `📦 ${totalToCommit} commit(s) to create (not yet in history) out of ${allDates.size} extracted`
     );
     console.log();
+    // Affiche un QR code vers GitHub (format petit)
+    const qrAscii = await QRCode.toString("https://github.com/", { type: "terminal", small: true });
+    console.log("QR code vers: https://github.com/");
+    console.log();
+    console.log(qrAscii);
+    console.log();
   }
   if (totalToCommit === 0) {
     // Rien à faire, on nettoie et on sort
@@ -227,17 +234,19 @@ export function pushCommits(options: PushOptions): void {
     if (commit.isLast) {
       const stdout = execSync(commit.cmd, { env: commit.env }).toString();
       if (!stdout.trim()) continue;
-      const lastCommitCmd = `${gitCmdBase} commit --author=\"${userName} <${userEmail}>\" -m \"Commit #${counter} for ${commit.date}\" --date=\"${commit.date}\"`;
+      const lastCommitCmd = `${gitCmdBase} commit --author="${userName} <${userEmail}>" -m "Commit #${counter} for ${commit.date}" --date="${commit.date}"`;
       execSync(lastCommitCmd, { env: commit.env });
     } else {
       execSync(commit.cmd, { env: commit.env });
     }
+
     process.stdout.write(
       `\r> Commit ${commit.idx + 1}/${totalToCommit} (${Math.round(
         ((commit.idx + 1) / totalToCommit) * 100
       )}%)`
     );
   }
+
   // Restaure la config git locale d'origine
   try {
     if (oldUserName)
