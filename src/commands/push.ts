@@ -144,6 +144,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     execSync(`git -C "${mirrorRepoPath}" add README.md`);
     execSync(`git -C "${mirrorRepoPath}" commit -m "Initial commit"`);
     execSync(`git -C "${mirrorRepoPath}" push origin main --quiet`);
+    execSync(`git -C "${mirrorRepoPath}" config core.autocrlf input`);
     console.log("> Initial commit created and pushed on main.");
   }
 
