@@ -58,7 +58,8 @@ export async function recordActivity(options: RecordOptions): Promise<void> {
       }
     }
     // 2. Fetch latest changes
-    console.log("Fetching latest changes from origin...");
+    console.log();
+    console.log("> Fetching latest changes from origin...");
     try {
       execSync("git fetch origin", { stdio: "inherit" });
     } catch (e) {
@@ -99,6 +100,8 @@ export async function recordActivity(options: RecordOptions): Promise<void> {
     fs.writeFileSync(outputFile, JSON.stringify(commitDates, null, 2), "utf-8");
     console.log(`✅ Commits successfully exported for email: ${authorEmail}`);
     console.log(`🎉 JSON file generated: ${outputFile}`);
+    console.log()
+    console.log(`Use the command 'gitpulse push' to synchronize your records.`);
   } catch (error: any) {
     log("error", `Error recording activity: ${error?.message || error}`);
   }

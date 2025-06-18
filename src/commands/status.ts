@@ -32,11 +32,14 @@ export function checkStatus(options: StatusOptions): void {
   }
 
   if (readyCount === 0) {
-    console.log("✔️ Synchronization: UP TO DATE");
+    console.log()
+    console.log("> Synchronization: UP TO DATE ✔️");
     console.log("Everything is up to date, nothing to push.");
   } else {
-    console.log("⏳ Synchronization: WAITING");
-    console.log(`📄 Files ready to record: ${readyCount}`);
+    console.log()
+    console.log("> Synchronization: WAITING ⏳");
+    console.log(`> Files ready to record: ${readyCount}`);
+    console.log()
     console.log("Use the command 'gitpulse push' to synchronize your records.");
   }
 }

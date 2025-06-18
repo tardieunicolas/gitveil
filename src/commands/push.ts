@@ -47,7 +47,8 @@ export function pushCommits(options: PushOptions): void {
     return;
   }
 
-  console.log(`🔍 Mirror repo path: ${mirrorRepoPath}`);
+  console.log();
+  console.log(`> Mirror repo path: ${mirrorRepoPath}`);
   // Vérifie la présence du README.md (sert de fichier de commit)
   const readmePath = path.join(mirrorRepoPath, "README.md");
   let initialCounter = 0;
@@ -99,7 +100,9 @@ export function pushCommits(options: PushOptions): void {
     execSync(`git -C "${mirrorRepoPath}" config user.email "${userEmail}"`);
     if (fs.existsSync(readmePath)) {
       execSync(`git -C "${mirrorRepoPath}" add README.md`);
-      const status = execSync(`git -C "${mirrorRepoPath}" status --porcelain`).toString();
+      const status = execSync(
+        `git -C "${mirrorRepoPath}" status --porcelain`
+      ).toString();
       if (status.trim()) {
         execSync(`git -C "${mirrorRepoPath}" commit -m "Initial commit"`);
         console.log("✅ Initial commit created.");
@@ -109,11 +112,15 @@ export function pushCommits(options: PushOptions): void {
     // Si le dépôt existe, on vérifie la config utilisateur
     let currentName = "";
     try {
-      currentName = execSync(`git -C "${mirrorRepoPath}" config user.name`).toString().trim();
+      currentName = execSync(`git -C "${mirrorRepoPath}" config user.name`)
+        .toString()
+        .trim();
     } catch {}
     let currentEmail = "";
     try {
-      currentEmail = execSync(`git -C "${mirrorRepoPath}" config user.email`).toString().trim();
+      currentEmail = execSync(`git -C "${mirrorRepoPath}" config user.email`)
+        .toString()
+        .trim();
     } catch {}
     if (currentName !== userName)
       execSync(`git -C "${mirrorRepoPath}" config user.name "${userName}"`);
@@ -157,13 +164,21 @@ export function pushCommits(options: PushOptions): void {
     oldUserName = execSync(`${gitCmdBase} config user.name`).toString().trim();
   } catch {}
   try {
-    oldUserEmail = execSync(`${gitCmdBase} config user.email`).toString().trim();
+    oldUserEmail = execSync(`${gitCmdBase} config user.email`)
+      .toString()
+      .trim();
   } catch {}
 
   // Boucle synchrone pour les commits
   let commitIndex = 0;
   const lastCommitIndex = toCommit.length - 1;
-  const commitCmds: {cmd: string, env: any, isLast: boolean, date: string, idx: number}[] = [];
+  const commitCmds: {
+    cmd: string;
+    env: any;
+    isLast: boolean;
+    date: string;
+    idx: number;
+  }[] = [];
   for (const [idx, dateRaw] of toCommit.entries()) {
     const date = String(dateRaw).trim().replace(/\r|\n/g, "");
     if (existingCommitDates.includes(date)) {
@@ -182,7 +197,7 @@ export function pushCommits(options: PushOptions): void {
         env: commitEnv,
         isLast: false,
         date,
-        idx
+        idx,
       });
     } else {
       // Dernier commit : modifie le README.md
@@ -193,14 +208,14 @@ export function pushCommits(options: PushOptions): void {
         env: commitEnv,
         isLast: false,
         date,
-        idx
+        idx,
       });
       commitCmds.push({
         cmd: `${gitCmdBase} status --porcelain`,
         env: commitEnv,
         isLast: true,
         date,
-        idx
+        idx,
       });
     }
   }
@@ -213,9 +228,8 @@ export function pushCommits(options: PushOptions): void {
     } else {
       execSync(commit.cmd, { env: commit.env });
     }
-    log(
-      "info",
-      `Commit ${commit.idx + 1}/${totalToCommit} (${Math.round(
+    process.stdout.write(
+      `\rCommit ${commit.idx + 1}/${totalToCommit} (${Math.round(
         ((commit.idx + 1) / totalToCommit) * 100
       )}%)`
     );
@@ -229,11 +243,9 @@ export function pushCommits(options: PushOptions): void {
   } catch {}
 
   process.stdout.write("\n");
-  console.log(`Number of new commits: ${newCommits}`);
-
   // Push automatique vers le dépôt distant (option --quiet pour accélérer)
   try {
-    console.log("🚀 Pushing commits to remote repository...");
+    console.log("> Pushing commits to remote repository... 🚀");
     execSync(`${gitCmdBase} push origin main --quiet`);
     console.log("> Push commits to remote completed ✅");
     // Nettoyage des fichiers temporaires après push
