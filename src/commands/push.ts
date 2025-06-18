@@ -1,9 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { log } from "../utils/logger";
-import { exec } from "child_process";
-import { promisify } from "util";
-const execAsync = promisify(exec);
+import { exec, execSync } from "child_process";
 
 // Options pour la commande push (peut être étendu pour d'autres paramètres)
 interface PushOptions {
@@ -26,7 +24,7 @@ function clearRecordsFolder(recordsFolderPath: string) {
 }
 
 // Fonction principale pour pousser les commits anonymisés
-export async function pushCommits(options: PushOptions): Promise<void> {
+export function pushCommits(options: PushOptions): void {
   // Recherche la racine du projet GitPulse (pour toujours utiliser la bonne config)
   let projectRoot = path.dirname(require.main?.filename || process.argv[1]);
   while (!fs.existsSync(path.join(projectRoot, "gitpulse.config.json"))) {
@@ -96,14 +94,14 @@ export async function pushCommits(options: PushOptions): Promise<void> {
   if (!fs.existsSync(gitDir)) {
     // Si le dépôt n'existe pas, on l'initialise et on configure l'utilisateur
     console.log(`🆕 Initializing git repo in ${mirrorRepoPath}`);
-    await execAsync(`git -C "${mirrorRepoPath}" init`);
-    await execAsync(`git -C "${mirrorRepoPath}" config user.name "${userName}"`);
-    await execAsync(`git -C "${mirrorRepoPath}" config user.email "${userEmail}"`);
+    execSync(`git -C "${mirrorRepoPath}" init`);
+    execSync(`git -C "${mirrorRepoPath}" config user.name "${userName}"`);
+    execSync(`git -C "${mirrorRepoPath}" config user.email "${userEmail}"`);
     if (fs.existsSync(readmePath)) {
-      await execAsync(`git -C "${mirrorRepoPath}" add README.md`);
-      const { stdout: status } = await execAsync(`git -C "${mirrorRepoPath}" status --porcelain`);
+      execSync(`git -C "${mirrorRepoPath}" add README.md`);
+      const status = execSync(`git -C "${mirrorRepoPath}" status --porcelain`).toString();
       if (status.trim()) {
-        await execAsync(`git -C "${mirrorRepoPath}" commit -m "Initial commit"`);
+        execSync(`git -C "${mirrorRepoPath}" commit -m "Initial commit"`);
         console.log("✅ Initial commit created.");
       }
     }
@@ -111,25 +109,23 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     // Si le dépôt existe, on vérifie la config utilisateur
     let currentName = "";
     try {
-      const { stdout } = await execAsync(`git -C "${mirrorRepoPath}" config user.name`);
-      currentName = stdout.trim();
+      currentName = execSync(`git -C "${mirrorRepoPath}" config user.name`).toString().trim();
     } catch {}
     let currentEmail = "";
     try {
-      const { stdout } = await execAsync(`git -C "${mirrorRepoPath}" config user.email`);
-      currentEmail = stdout.trim();
+      currentEmail = execSync(`git -C "${mirrorRepoPath}" config user.email`).toString().trim();
     } catch {}
     if (currentName !== userName)
-      await execAsync(`git -C "${mirrorRepoPath}" config user.name "${userName}"`);
+      execSync(`git -C "${mirrorRepoPath}" config user.name "${userName}"`);
     if (currentEmail !== userEmail)
-      await execAsync(`git -C "${mirrorRepoPath}" config user.email "${userEmail}"`);
+      execSync(`git -C "${mirrorRepoPath}" config user.email "${userEmail}"`);
   }
 
   // Récupère les dates déjà présentes dans l'historique git (évite les doublons)
   let existingCommitDates: string[] = [];
   try {
     const gitLogCmd = `git -C "${mirrorRepoPath}" log --pretty=format:%ad --date=iso8601-strict`;
-    const { stdout } = await execAsync(gitLogCmd);
+    const stdout = execSync(gitLogCmd).toString();
     existingCommitDates = stdout.split("\n").filter(Boolean);
   } catch (e) {}
 
@@ -155,15 +151,13 @@ export async function pushCommits(options: PushOptions): Promise<void> {
   let oldUserName = "";
   let oldUserEmail = "";
   try {
-    const { stdout } = await execAsync(`${gitCmdBase} config user.name`);
-    oldUserName = stdout.trim();
+    oldUserName = execSync(`${gitCmdBase} config user.name`).toString().trim();
   } catch {}
   try {
-    const { stdout } = await execAsync(`${gitCmdBase} config user.email`);
-    oldUserEmail = stdout.trim();
+    oldUserEmail = execSync(`${gitCmdBase} config user.email`).toString().trim();
   } catch {}
 
-  // Boucle asynchrone et batchée pour les commits
+  // Boucle synchrone pour les commits
   let counter = initialCounter;
   let commitIndex = 0;
   const lastCommitIndex = toCommit.length - 1;
@@ -209,15 +203,14 @@ export async function pushCommits(options: PushOptions): Promise<void> {
       });
     }
   }
-  // Exécution asynchrone des commandes
   for (const commit of commitCmds) {
     if (commit.isLast) {
-      const { stdout } = await execAsync(commit.cmd, { env: commit.env });
+      const stdout = execSync(commit.cmd, { env: commit.env }).toString();
       if (!stdout.trim()) continue;
       const lastCommitCmd = `${gitCmdBase} commit --author=\"${userName} <${userEmail}>\" -m \"Commit #${counter} for ${commit.date}\" --date=\"${commit.date}\"`;
-      await execAsync(lastCommitCmd, { env: commit.env });
+      execSync(lastCommitCmd, { env: commit.env });
     } else {
-      await execAsync(commit.cmd, { env: commit.env });
+      execSync(commit.cmd, { env: commit.env });
     }
     log(
       "info",
@@ -229,9 +222,9 @@ export async function pushCommits(options: PushOptions): Promise<void> {
   // Restaure la config git locale d'origine
   try {
     if (oldUserName)
-      await execAsync(`${gitCmdBase} config user.name "${oldUserName}"`);
+      execSync(`${gitCmdBase} config user.name "${oldUserName}"`);
     if (oldUserEmail)
-      await execAsync(`${gitCmdBase} config user.email "${oldUserEmail}"`);
+      execSync(`${gitCmdBase} config user.email "${oldUserEmail}"`);
   } catch {}
 
   process.stdout.write("\n");
@@ -240,7 +233,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
   // Push automatique vers le dépôt distant (option --quiet pour accélérer)
   try {
     console.log("🚀 Pushing commits to remote repository...");
-    await execAsync(`${gitCmdBase} push origin main --quiet`);
+    execSync(`${gitCmdBase} push origin main --quiet`);
     console.log("> Push commits to remote completed ✅");
     // Nettoyage des fichiers temporaires après push
     clearRecordsFolder(logsDir);
