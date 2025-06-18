@@ -3,6 +3,7 @@ import path from "path";
 import readline from "readline";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import { log } from "console";
 
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
@@ -80,10 +81,12 @@ export async function promptUser(query: string): Promise<string> {
 // Complete workflow: check whitelist, ask for consent, send code, verify, and add to whitelist
 export async function verifyEmailWorkflow(email: string): Promise<boolean> {
   if (isEmailWhitelisted(email)) return true;
+  console.log();
   console.log(`The email address "${email}" is not yet trusted.`);
   console.log(
     "Ensure fair use of this tool, each new email address must be verified only once.\nAfter verification, your address will be trusted for all future uses."
   );
+  console.log();
   const consent = await promptUser(
     `Would you like to receive a one-time verification code at this address? (y/n): `
   );
@@ -99,7 +102,8 @@ export async function verifyEmailWorkflow(email: string): Promise<boolean> {
     );
     if (input.trim() === code) {
       addEmailToWhitelist(email);
-      console.log("✌🏻Email successfully verified! This address is now trusted and you won't be asked again.");
+      console.log("Email successfully verified! This address is now trusted and you won't be asked again.");
+      console.log()
       return true;
     } else {
       console.log(`❗ The code entered is incorrect. ${2 - attempts} attempt(s) left.`);

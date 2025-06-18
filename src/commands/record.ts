@@ -32,7 +32,7 @@ export async function recordActivity(options: RecordOptions): Promise<void> {
           authorEmail = execSync("git config user.email --global")
             .toString()
             .trim();
-          log("info", `Using global git user.email: ${authorEmail}`);
+          console.log(`Using global git user.email: ${authorEmail}`);
         } catch (e2) {
           log(
             "warn",
@@ -58,7 +58,7 @@ export async function recordActivity(options: RecordOptions): Promise<void> {
       }
     }
     // 2. Fetch latest changes
-    log("info", "Fetching latest changes from origin...");
+    console.log("Fetching latest changes from origin...");
     try {
       execSync("git fetch origin", { stdio: "inherit" });
     } catch (e) {
@@ -84,7 +84,7 @@ export async function recordActivity(options: RecordOptions): Promise<void> {
           filterByEmail ? " for " + authorEmail : ""
         }: ${commitDates.length}`
       );
-      commitDates.forEach((date) => log("info", date));
+      commitDates.forEach((date) => console.log(date));
       return;
     }
     // 4. Write to JSON file
@@ -97,8 +97,8 @@ export async function recordActivity(options: RecordOptions): Promise<void> {
       fs.mkdirSync(target, { recursive: true });
     }
     fs.writeFileSync(outputFile, JSON.stringify(commitDates, null, 2), "utf-8");
-    log("info", `✅ Commits successfully exported for email: ${authorEmail}`);
-    log("info", `🎉 JSON file generated: ${outputFile}`);
+    console.log(`✅ Commits successfully exported for email: ${authorEmail}`);
+    console.log(`🎉 JSON file generated: ${outputFile}`);
   } catch (error: any) {
     log("error", `Error recording activity: ${error?.message || error}`);
   }

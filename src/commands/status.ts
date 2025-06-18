@@ -28,13 +28,15 @@ export function checkStatus(options: StatusOptions): void {
     );
     readyCount = filtered.length;
   } else {
-    log("warn", `Records folder does not exist: ${recordsDir}`);
+    log("warn", `⚠️  Records folder does not exist: ${recordsDir}`);
   }
+
   if (readyCount === 0) {
-    log("info", "Synchronization Status ✅");
-    log("info", "- Everything is up to date, nothing to push.");
+    console.log("✔️ Synchronization: UP TO DATE");
+    console.log("Everything is up to date, nothing to push.");
   } else {
-    log("info", "Synchronization Status ⏳");
-    log("info", `- Files ready to record: ${readyCount}`);
+    console.log("⏳ Synchronization: WAITING");
+    console.log(`📄 Files ready to record: ${readyCount}`);
+    console.log("Use the command 'gitpulse push' to synchronize your records.");
   }
 }

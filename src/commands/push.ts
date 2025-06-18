@@ -43,7 +43,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     return;
   }
 
-  log("info", `🔍 Mirror repo path: ${mirrorRepoPath}`);
+  console.log(`🔍 Mirror repo path: ${mirrorRepoPath}`);
   // 2. Create README.md if it does not exist (empty file if needed)
   const readmePath = path.join(mirrorRepoPath, "README.md");
   let initialCounter = 0;
@@ -60,7 +60,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     }
   } else {
     fs.writeFileSync(readmePath, "");
-    log("info", "📄 README.md created in mirrorRepoPath.");
+    console.log("📄 README.md created in mirrorRepoPath.");
   }
 
   // 3. Extract all dates present in the JSON files in the records-folder folder
@@ -92,7 +92,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
   const { execSync } = require("child_process");
   // 1. Initialiser le dépôt s'il n'existe pas
   if (!fs.existsSync(path.join(mirrorRepoPath, ".git"))) {
-    log("info", `🆕 Initializing git repo in ${mirrorRepoPath}`);
+    console.log(`🆕 Initializing git repo in ${mirrorRepoPath}`);
     execSync(`git -C "${mirrorRepoPath}" init`);
     execSync(`git -C "${mirrorRepoPath}" config user.name "${userName}"`);
     execSync(`git -C "${mirrorRepoPath}" config user.email "${userEmail}"`);
@@ -103,7 +103,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
       ).toString();
       if (status.trim()) {
         execSync(`git -C "${mirrorRepoPath}" commit -m "Initial commit"`);
-        log("info", "✅ Initial commit created.");
+        console.log("✅ Initial commit created.");
       }
     }
   }
@@ -132,13 +132,12 @@ export async function pushCommits(options: PushOptions): Promise<void> {
         !existingCommitDates.includes(String(date).trim().replace(/\r|\n/g, ""))
     );
   const totalToCommit = toCommit.length;
-  log(
-    "info",
+  console.log(
     `📦 ${totalToCommit} commit(s) to create (not yet in history) out of ${allDates.size} extracted.`
   );
   if (totalToCommit === 0) {
-    process.stdout.write("\n");
-    log("info", "📡 No new commits to push");
+    console.log("📡 No new commits to push");
+    clearRecordsFolder(logsDir);
     return;
   }
   const gitCmdBase = `git -C "${mirrorRepoPath}"`;
@@ -198,14 +197,14 @@ export async function pushCommits(options: PushOptions): Promise<void> {
   } catch {}
 
   process.stdout.write("\n");
-  log("info", `Number of new commits: ${newCommits}`);
+  console.log(`Number of new commits: ${newCommits}`);
 
   // Push automatique vers le dépôt distant
   try {
     const gitCmdBase = `git -C "${mirrorRepoPath}"`;
-    log("info", "🚀 Pushing commits to remote repository...");
+    console.log("🚀 Pushing commits to remote repository...");
     execSync(`${gitCmdBase} push origin main`, { stdio: "inherit" });
-    log("info", "✅ Push commits to remote completed.");
+    console.log("✅ Push commits to remote completed.");
     clearRecordsFolder(logsDir);
   } catch (err: any) {
     log("error", `❌ Git push failed: ${err.message}`);
