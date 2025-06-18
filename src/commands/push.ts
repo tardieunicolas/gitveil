@@ -168,7 +168,8 @@ export async function pushCommits(options: PushOptions): Promise<void> {
   // Boucle sur chaque date à commiter (un commit par date)
   let counter = initialCounter;
   let commitIndex = 0;
-  for (const dateRaw of toCommit) {
+  const lastCommitIndex = toCommit.length - 1;
+  for (const [idx, dateRaw] of toCommit.entries()) {
     const date = String(dateRaw).trim().replace(/\r|\n/g, "");
     if (existingCommitDates.includes(date)) {
       continue;
@@ -176,25 +177,30 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     newCommits++;
     counter++;
     commitIndex++;
-    // On écrit le compteur dans le README.md (sert de contenu unique)
-    const content = [`Counter: ${counter}`, ""].join("\n");
-    fs.writeFileSync(readmePath, content);
     const commitEnv = {
       ...process.env,
       GIT_COMMITTER_NAME: userName,
       GIT_COMMITTER_EMAIL: userEmail,
     };
     try {
-      // Ajoute tout d'un coup (optimisé)
-      execSync(`${gitCmdBase} add -A`);
       execSync(`${gitCmdBase} config core.autocrlf false`);
-      const status = execSync(`${gitCmdBase} status --porcelain`).toString();
-      if (!status.trim()) {
-        continue;
+      let commitCmd = "";
+      if (idx !== lastCommitIndex) {
+        // Commit vide pour tous sauf le dernier
+        commitCmd = `${gitCmdBase} commit --allow-empty --author=\"${userName} <${userEmail}>\" -m \"Commit #${counter} for ${date}\" --date=\"${date}\"`;
+        execSync(commitCmd, { env: commitEnv });
+      } else {
+        // Dernier commit : modifie le README.md
+        const content = [`Counter: ${counter}`, ""].join("\n");
+        fs.writeFileSync(readmePath, content);
+        execSync(`${gitCmdBase} add -A`);
+        const status = execSync(`${gitCmdBase} status --porcelain`).toString();
+        if (!status.trim()) {
+          continue;
+        }
+        commitCmd = `${gitCmdBase} commit --author=\"${userName} <${userEmail}>\" -m \"Commit #${counter} for ${date}\" --date=\"${date}\"`;
+        execSync(commitCmd, { env: commitEnv });
       }
-      // Commit avec la date et l'auteur anonymisé
-      const commitCmd = `${gitCmdBase} commit --author=\"${userName} <${userEmail}>\" -m "Commit #${counter} for ${date}" --date="${date}"`;
-      execSync(commitCmd, { env: commitEnv });
       log(
         "info",
         `Commit ${commitIndex}/${totalToCommit} (${Math.round(
