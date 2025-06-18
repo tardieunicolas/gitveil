@@ -129,6 +129,24 @@ export async function pushCommits(options: PushOptions): Promise<void> {
       execSync(`git -C "${mirrorRepoPath}" config user.email "${userEmail}"`);
   }
 
+  // Vérifie si le repo n'a aucun commit et pousse un commit initial si besoin
+  let hasCommit = false;
+  try {
+    const logResult = execSync(`git -C "${mirrorRepoPath}" log --oneline main`, {
+      stdio: "pipe",
+    }).toString();
+    if (logResult.trim()) hasCommit = true;
+  } catch (e) {}
+  if (!hasCommit) {
+    if (!fs.existsSync(readmePath)) {
+      fs.writeFileSync(readmePath, "# GitPulse\n");
+    }
+    execSync(`git -C "${mirrorRepoPath}" add README.md`);
+    execSync(`git -C "${mirrorRepoPath}" commit -m "Initial commit"`);
+    execSync(`git -C "${mirrorRepoPath}" push origin main --quiet`);
+    console.log("> Initial commit created and pushed on main.");
+  }
+
   // Récupère les dates déjà présentes dans l'historique git (évite les doublons)
   let existingCommitDates: string[] = [];
   try {
@@ -203,7 +221,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     };
     if (idx !== lastCommitIndex) {
       commitCmds.push({
-        cmd: `${gitCmdBase} commit --allow-empty --author=\"${userName} <${userEmail}>\" -m \"Commit #${counter} for ${date}\" --date=\"${date}\"`,
+        cmd: `${gitCmdBase} commit --allow-empty --author="${userName} <${userEmail}>" -m "Commit #${counter} for ${date}" --date="${date}"`,
         env: commitEnv,
         isLast: false,
         date,
