@@ -1,11 +1,14 @@
 import * as fs from "fs";
 import * as path from "path";
 import { log } from "../utils/logger";
+const { execSync } = require("child_process");
 
+// Options pour la commande push (peut être étendu pour d'autres paramètres)
 interface PushOptions {
   target?: string;
 }
 
+// Supprime tous les fichiers et dossiers dans records-folder après un push réussi
 function clearRecordsFolder(recordsFolderPath: string) {
   if (!fs.existsSync(recordsFolderPath)) return;
   const files = fs.readdirSync(recordsFolderPath);
@@ -14,16 +17,16 @@ function clearRecordsFolder(recordsFolderPath: string) {
     if (fs.statSync(filePath).isFile()) {
       fs.unlinkSync(filePath);
     } else if (fs.statSync(filePath).isDirectory()) {
-      // Optionally, recursively delete subfolders if needed
+      // Suppression récursive des sous-dossiers si besoin
       fs.rmSync(filePath, { recursive: true, force: true });
     }
   }
 }
 
+// Fonction principale pour pousser les commits anonymisés
 export async function pushCommits(options: PushOptions): Promise<void> {
-  // Trouve la racine du projet GitPulse même si lancé ailleurs
+  // Recherche la racine du projet GitPulse (pour toujours utiliser la bonne config)
   let projectRoot = path.dirname(require.main?.filename || process.argv[1]);
-  // Remonte jusqu'à trouver le gitpulse.config.json
   while (!fs.existsSync(path.join(projectRoot, "gitpulse.config.json"))) {
     const parent = path.dirname(projectRoot);
     if (parent === projectRoot) break;
@@ -33,6 +36,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
   let mirrorRepoPath = "";
   let userName = "GitPulse";
   let userEmail = "gitpulse@example.com";
+  // Lecture de la config du module (toujours à la racine)
   if (fs.existsSync(configPath)) {
     const config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
     mirrorRepoPath = config.mirrorRepoPath;
@@ -44,7 +48,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
   }
 
   console.log(`🔍 Mirror repo path: ${mirrorRepoPath}`);
-  // 2. Create README.md if it does not exist (empty file if needed)
+  // Vérifie la présence du README.md (sert de fichier de commit)
   const readmePath = path.join(mirrorRepoPath, "README.md");
   let initialCounter = 0;
   if (fs.existsSync(readmePath)) {
@@ -59,39 +63,36 @@ export async function pushCommits(options: PushOptions): Promise<void> {
       );
     }
   } else {
+    // Crée un README.md vide si besoin
     fs.writeFileSync(readmePath, "");
     console.log("📄 README.md created in mirrorRepoPath.");
   }
 
-  // 3. Extract all dates present in the JSON files in the records-folder folder
+  // Lecture mémoire optimisée des fichiers JSON (évite de parser plusieurs fois)
   const logsDir = path.join(projectRoot, "records-folder");
   if (!fs.existsSync(logsDir)) {
     log("error", `❌ Logs directory not found: ${logsDir}`);
     return;
   }
-  const files = fs
-    .readdirSync(logsDir)
-    .filter((f) => fs.statSync(path.join(logsDir, f)).isFile());
+  // On ne lit que les fichiers .json
+  const files = fs.readdirSync(logsDir).filter((f) => f.endsWith(".json"));
   const allDates = new Set<string>();
   for (const file of files) {
-    if (file.endsWith(".json")) {
-      try {
-        const content = fs.readFileSync(path.join(logsDir, file), "utf-8");
-        const json = JSON.parse(content);
-        if (Array.isArray(json)) {
-          json.forEach((entry: any) => {
-            allDates.add(entry);
-          });
-        }
-      } catch (e) {
-        log("warn", `⚠️ Error parsing file ${file}`);
+    try {
+      const content = fs.readFileSync(path.join(logsDir, file), "utf-8");
+      const json = JSON.parse(content);
+      if (Array.isArray(json)) {
+        json.forEach((entry: any) => allDates.add(entry));
       }
+    } catch (e) {
+      log("warn", `⚠️ Error parsing file ${file}`);
     }
   }
-  // --- Correction robustesse dépôt git ---
-  const { execSync } = require("child_process");
-  // 1. Initialiser le dépôt s'il n'existe pas
-  if (!fs.existsSync(path.join(mirrorRepoPath, ".git"))) {
+
+  // Initialisation du dépôt git uniquement si besoin
+  const gitDir = path.join(mirrorRepoPath, ".git");
+  if (!fs.existsSync(gitDir)) {
+    // Si le dépôt n'existe pas, on l'initialise et on configure l'utilisateur
     console.log(`🆕 Initializing git repo in ${mirrorRepoPath}`);
     execSync(`git -C "${mirrorRepoPath}" init`);
     execSync(`git -C "${mirrorRepoPath}" config user.name "${userName}"`);
@@ -106,24 +107,35 @@ export async function pushCommits(options: PushOptions): Promise<void> {
         console.log("✅ Initial commit created.");
       }
     }
+  } else {
+    // Si le dépôt existe, on vérifie la config utilisateur
+    const currentName = execSync(
+      `git -C "${mirrorRepoPath}" config user.name`
+    )
+      .toString()
+      .trim();
+    const currentEmail = execSync(
+      `git -C "${mirrorRepoPath}" config user.email`
+    )
+      .toString()
+      .trim();
+    if (currentName !== userName)
+      execSync(`git -C "${mirrorRepoPath}" config user.name "${userName}"`);
+    if (currentEmail !== userEmail)
+      execSync(`git -C "${mirrorRepoPath}" config user.email "${userEmail}"`);
   }
-  // --- Fin correction robustesse dépôt git ---
 
-  // 4. For each unique date, create a commit
-  let counter = initialCounter;
-  let uniqueDays = new Set<string>();
-  // Si on veut garder la continuité des jours uniques, il faudrait les stocker ailleurs ou les recalculer
-  // Ici, on recommence le set, mais on démarre le compteur à la bonne valeur
+  // Récupère les dates déjà présentes dans l'historique git (évite les doublons)
   let existingCommitDates: string[] = [];
   try {
     const gitLogCmd = `git -C "${mirrorRepoPath}" log --pretty=format:%ad --date=iso8601-strict`;
-    existingCommitDates = require("child_process")
-      .execSync(gitLogCmd)
+    existingCommitDates = execSync(gitLogCmd)
       .toString()
       .split("\n")
       .filter(Boolean);
   } catch (e) {}
 
+  // Filtre les dates à commiter (uniquement les nouvelles)
   let newCommits = 0;
   const toCommit = Array.from(allDates)
     .sort()
@@ -136,6 +148,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     `📦 ${totalToCommit} commit(s) to create (not yet in history) out of ${allDates.size} extracted.`
   );
   if (totalToCommit === 0) {
+    // Rien à faire, on nettoie et on sort
     console.log("📡 No new commits to push");
     clearRecordsFolder(logsDir);
     return;
@@ -152,6 +165,8 @@ export async function pushCommits(options: PushOptions): Promise<void> {
       .trim();
   } catch {}
 
+  // Boucle sur chaque date à commiter (un commit par date)
+  let counter = initialCounter;
   let commitIndex = 0;
   for (const dateRaw of toCommit) {
     const date = String(dateRaw).trim().replace(/\r|\n/g, "");
@@ -161,6 +176,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     newCommits++;
     counter++;
     commitIndex++;
+    // On écrit le compteur dans le README.md (sert de contenu unique)
     const content = [`Counter: ${counter}`, ""].join("\n");
     fs.writeFileSync(readmePath, content);
     const commitEnv = {
@@ -169,12 +185,14 @@ export async function pushCommits(options: PushOptions): Promise<void> {
       GIT_COMMITTER_EMAIL: userEmail,
     };
     try {
-      execSync(`${gitCmdBase} add README.md`);
+      // Ajoute tout d'un coup (optimisé)
+      execSync(`${gitCmdBase} add -A`);
       execSync(`${gitCmdBase} config core.autocrlf false`);
       const status = execSync(`${gitCmdBase} status --porcelain`).toString();
       if (!status.trim()) {
         continue;
       }
+      // Commit avec la date et l'auteur anonymisé
       const commitCmd = `${gitCmdBase} commit --author=\"${userName} <${userEmail}>\" -m "Commit #${counter} for ${date}" --date="${date}"`;
       execSync(commitCmd, { env: commitEnv });
       log(
@@ -199,14 +217,23 @@ export async function pushCommits(options: PushOptions): Promise<void> {
   process.stdout.write("\n");
   console.log(`Number of new commits: ${newCommits}`);
 
-  // Push automatique vers le dépôt distant
+  // Push automatique vers le dépôt distant (option --quiet pour accélérer)
   try {
-    const gitCmdBase = `git -C "${mirrorRepoPath}"`;
     console.log("🚀 Pushing commits to remote repository...");
-    execSync(`${gitCmdBase} push origin main`, { stdio: "inherit" });
-    console.log("✅ Push commits to remote completed.");
+    execSync(`${gitCmdBase} push origin main --quiet`, { stdio: "inherit" });
+    console.log("> Push commits to remote completed ✅");
+    // Nettoyage des fichiers temporaires après push
     clearRecordsFolder(logsDir);
   } catch (err: any) {
     log("error", `❌ Git push failed: ${err.message}`);
   }
+
+  // --- Axes d'évolution possibles ---
+  // - Utiliser l'API GitHub pour pousser sans dépôt local (mode cloud)
+  // - Paralléliser la lecture/écriture des fichiers JSON si beaucoup de fichiers
+  // - Ajouter un cache pour ne traiter que les nouveaux fichiers depuis le dernier push
+  // - Permettre de choisir la branche de push (option)
+  // - Ajouter un mode "dry-run" pour simuler le push sans rien modifier
+  // - Gérer les erreurs réseau et proposer un retry automatique
+  // - Ajouter des logs détaillés ou un mode verbose/silencieux
 }
