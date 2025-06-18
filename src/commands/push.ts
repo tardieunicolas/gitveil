@@ -1,7 +1,9 @@
 import * as fs from "fs";
 import * as path from "path";
 import { log } from "../utils/logger";
-const { execSync } = require("child_process");
+import { exec } from "child_process";
+import { promisify } from "util";
+const execAsync = promisify(exec);
 
 // Options pour la commande push (peut être étendu pour d'autres paramètres)
 interface PushOptions {
@@ -94,45 +96,41 @@ export async function pushCommits(options: PushOptions): Promise<void> {
   if (!fs.existsSync(gitDir)) {
     // Si le dépôt n'existe pas, on l'initialise et on configure l'utilisateur
     console.log(`🆕 Initializing git repo in ${mirrorRepoPath}`);
-    execSync(`git -C "${mirrorRepoPath}" init`);
-    execSync(`git -C "${mirrorRepoPath}" config user.name "${userName}"`);
-    execSync(`git -C "${mirrorRepoPath}" config user.email "${userEmail}"`);
+    await execAsync(`git -C "${mirrorRepoPath}" init`);
+    await execAsync(`git -C "${mirrorRepoPath}" config user.name "${userName}"`);
+    await execAsync(`git -C "${mirrorRepoPath}" config user.email "${userEmail}"`);
     if (fs.existsSync(readmePath)) {
-      execSync(`git -C "${mirrorRepoPath}" add README.md`);
-      const status = execSync(
-        `git -C "${mirrorRepoPath}" status --porcelain`
-      ).toString();
+      await execAsync(`git -C "${mirrorRepoPath}" add README.md`);
+      const { stdout: status } = await execAsync(`git -C "${mirrorRepoPath}" status --porcelain`);
       if (status.trim()) {
-        execSync(`git -C "${mirrorRepoPath}" commit -m "Initial commit"`);
+        await execAsync(`git -C "${mirrorRepoPath}" commit -m "Initial commit"`);
         console.log("✅ Initial commit created.");
       }
     }
   } else {
     // Si le dépôt existe, on vérifie la config utilisateur
-    const currentName = execSync(
-      `git -C "${mirrorRepoPath}" config user.name`
-    )
-      .toString()
-      .trim();
-    const currentEmail = execSync(
-      `git -C "${mirrorRepoPath}" config user.email`
-    )
-      .toString()
-      .trim();
+    let currentName = "";
+    try {
+      const { stdout } = await execAsync(`git -C "${mirrorRepoPath}" config user.name`);
+      currentName = stdout.trim();
+    } catch {}
+    let currentEmail = "";
+    try {
+      const { stdout } = await execAsync(`git -C "${mirrorRepoPath}" config user.email`);
+      currentEmail = stdout.trim();
+    } catch {}
     if (currentName !== userName)
-      execSync(`git -C "${mirrorRepoPath}" config user.name "${userName}"`);
+      await execAsync(`git -C "${mirrorRepoPath}" config user.name "${userName}"`);
     if (currentEmail !== userEmail)
-      execSync(`git -C "${mirrorRepoPath}" config user.email "${userEmail}"`);
+      await execAsync(`git -C "${mirrorRepoPath}" config user.email "${userEmail}"`);
   }
 
   // Récupère les dates déjà présentes dans l'historique git (évite les doublons)
   let existingCommitDates: string[] = [];
   try {
     const gitLogCmd = `git -C "${mirrorRepoPath}" log --pretty=format:%ad --date=iso8601-strict`;
-    existingCommitDates = execSync(gitLogCmd)
-      .toString()
-      .split("\n")
-      .filter(Boolean);
+    const { stdout } = await execAsync(gitLogCmd);
+    existingCommitDates = stdout.split("\n").filter(Boolean);
   } catch (e) {}
 
   // Filtre les dates à commiter (uniquement les nouvelles)
@@ -157,18 +155,19 @@ export async function pushCommits(options: PushOptions): Promise<void> {
   let oldUserName = "";
   let oldUserEmail = "";
   try {
-    oldUserName = execSync(`${gitCmdBase} config user.name`).toString().trim();
+    const { stdout } = await execAsync(`${gitCmdBase} config user.name`);
+    oldUserName = stdout.trim();
   } catch {}
   try {
-    oldUserEmail = execSync(`${gitCmdBase} config user.email`)
-      .toString()
-      .trim();
+    const { stdout } = await execAsync(`${gitCmdBase} config user.email`);
+    oldUserEmail = stdout.trim();
   } catch {}
 
-  // Boucle sur chaque date à commiter (un commit par date)
+  // Boucle asynchrone et batchée pour les commits
   let counter = initialCounter;
   let commitIndex = 0;
   const lastCommitIndex = toCommit.length - 1;
+  const commitCmds: {cmd: string, env: any, isLast: boolean, date: string, idx: number}[] = [];
   for (const [idx, dateRaw] of toCommit.entries()) {
     const date = String(dateRaw).trim().replace(/\r|\n/g, "");
     if (existingCommitDates.includes(date)) {
@@ -182,42 +181,57 @@ export async function pushCommits(options: PushOptions): Promise<void> {
       GIT_COMMITTER_NAME: userName,
       GIT_COMMITTER_EMAIL: userEmail,
     };
-    try {
-      execSync(`${gitCmdBase} config core.autocrlf false`);
-      let commitCmd = "";
-      if (idx !== lastCommitIndex) {
-        // Commit vide pour tous sauf le dernier
-        commitCmd = `${gitCmdBase} commit --allow-empty --author=\"${userName} <${userEmail}>\" -m \"Commit #${counter} for ${date}\" --date=\"${date}\"`;
-        execSync(commitCmd, { env: commitEnv });
-      } else {
-        // Dernier commit : modifie le README.md
-        const content = [`Counter: ${counter}`, ""].join("\n");
-        fs.writeFileSync(readmePath, content);
-        execSync(`${gitCmdBase} add -A`);
-        const status = execSync(`${gitCmdBase} status --porcelain`).toString();
-        if (!status.trim()) {
-          continue;
-        }
-        commitCmd = `${gitCmdBase} commit --author=\"${userName} <${userEmail}>\" -m \"Commit #${counter} for ${date}\" --date=\"${date}\"`;
-        execSync(commitCmd, { env: commitEnv });
-      }
-      log(
-        "info",
-        `Commit ${commitIndex}/${totalToCommit} (${Math.round(
-          (commitIndex / totalToCommit) * 100
-        )}%)`
-      );
-    } catch (err: any) {
-      log("error", `❌ Git commit failed: ${err.message}`);
-      return;
+    if (idx !== lastCommitIndex) {
+      commitCmds.push({
+        cmd: `${gitCmdBase} commit --allow-empty --author=\"${userName} <${userEmail}>\" -m \"Commit #${counter} for ${date}\" --date=\"${date}\"`,
+        env: commitEnv,
+        isLast: false,
+        date,
+        idx
+      });
+    } else {
+      // Dernier commit : modifie le README.md
+      const content = [`Counter: ${counter}`, ""].join("\n");
+      fs.writeFileSync(readmePath, content);
+      commitCmds.push({
+        cmd: `${gitCmdBase} add -A`,
+        env: commitEnv,
+        isLast: false,
+        date,
+        idx
+      });
+      commitCmds.push({
+        cmd: `${gitCmdBase} status --porcelain`,
+        env: commitEnv,
+        isLast: true,
+        date,
+        idx
+      });
     }
+  }
+  // Exécution asynchrone des commandes
+  for (const commit of commitCmds) {
+    if (commit.isLast) {
+      const { stdout } = await execAsync(commit.cmd, { env: commit.env });
+      if (!stdout.trim()) continue;
+      const lastCommitCmd = `${gitCmdBase} commit --author=\"${userName} <${userEmail}>\" -m \"Commit #${counter} for ${commit.date}\" --date=\"${commit.date}\"`;
+      await execAsync(lastCommitCmd, { env: commit.env });
+    } else {
+      await execAsync(commit.cmd, { env: commit.env });
+    }
+    log(
+      "info",
+      `Commit ${commit.idx + 1}/${totalToCommit} (${Math.round(
+        ((commit.idx + 1) / totalToCommit) * 100
+      )}%)`
+    );
   }
   // Restaure la config git locale d'origine
   try {
     if (oldUserName)
-      execSync(`${gitCmdBase} config user.name "${oldUserName}"`);
+      await execAsync(`${gitCmdBase} config user.name "${oldUserName}"`);
     if (oldUserEmail)
-      execSync(`${gitCmdBase} config user.email "${oldUserEmail}"`);
+      await execAsync(`${gitCmdBase} config user.email "${oldUserEmail}"`);
   } catch {}
 
   process.stdout.write("\n");
@@ -226,7 +240,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
   // Push automatique vers le dépôt distant (option --quiet pour accélérer)
   try {
     console.log("🚀 Pushing commits to remote repository...");
-    execSync(`${gitCmdBase} push origin main --quiet`, { stdio: "inherit" });
+    await execAsync(`${gitCmdBase} push origin main --quiet`);
     console.log("> Push commits to remote completed ✅");
     // Nettoyage des fichiers temporaires après push
     clearRecordsFolder(logsDir);
