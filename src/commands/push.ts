@@ -181,7 +181,6 @@ export async function pushCommits(options: PushOptions): Promise<void> {
   } catch {}
 
   // Boucle synchrone pour les commits
-  let commitIndex = 0;
   const lastCommitIndex = toCommit.length - 1;
   const commitCmds: {
     cmd: string;
