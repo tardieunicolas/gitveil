@@ -24,6 +24,20 @@ function resolveTargetPath(target?: string): string {
   return target;
 }
 
+function clearRecordsFolder(recordsFolderPath: string) {
+  if (!fs.existsSync(recordsFolderPath)) return;
+  const files = fs.readdirSync(recordsFolderPath);
+  for (const file of files) {
+    const filePath = path.join(recordsFolderPath, file);
+    if (fs.statSync(filePath).isFile()) {
+      fs.unlinkSync(filePath);
+    } else if (fs.statSync(filePath).isDirectory()) {
+      // Optionally, recursively delete subfolders if needed
+      fs.rmSync(filePath, { recursive: true, force: true });
+    }
+  }
+}
+
 export async function pushCommits(options: PushOptions): Promise<void> {
   // Trouve la racine du projet GitPulse même si lancé ailleurs
   let projectRoot = path.dirname(require.main?.filename || process.argv[1]);
@@ -152,7 +166,9 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     oldUserName = execSync(`${gitCmdBase} config user.name`).toString().trim();
   } catch {}
   try {
-    oldUserEmail = execSync(`${gitCmdBase} config user.email`).toString().trim();
+    oldUserEmail = execSync(`${gitCmdBase} config user.email`)
+      .toString()
+      .trim();
   } catch {}
 
   let commitIndex = 0;
@@ -193,8 +209,10 @@ export async function pushCommits(options: PushOptions): Promise<void> {
   }
   // Restaure la config git locale d'origine
   try {
-    if (oldUserName) execSync(`${gitCmdBase} config user.name "${oldUserName}"`);
-    if (oldUserEmail) execSync(`${gitCmdBase} config user.email "${oldUserEmail}"`);
+    if (oldUserName)
+      execSync(`${gitCmdBase} config user.name "${oldUserName}"`);
+    if (oldUserEmail)
+      execSync(`${gitCmdBase} config user.email "${oldUserEmail}"`);
   } catch {}
 
   process.stdout.write("\n");
@@ -206,6 +224,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     log("info", "🚀 Pushing commits to remote repository...");
     execSync(`${gitCmdBase} push origin main`, { stdio: "inherit" });
     log("info", "✅ Push commits to remote completed.");
+    clearRecordsFolder(logsDir);
   } catch (err: any) {
     log("error", `❌ Git push failed: ${err.message}`);
   }
