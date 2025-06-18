@@ -34,8 +34,9 @@ program
 program
   .command('config')
   .description('Modify the configuration settings')
-  .option('--mirror-path <path>', 'Path to the mirror repository')
-  .action((options) => {
+  .argument('[key]', 'Config key to set (email, name, mirrorRepoPath)')
+  .argument('[value]', 'Value to set for the key')
+  .action((key, value, options) => {
     const fs = require('fs');
     const path = require('path');
     // Recherche la config à la racine du projet GitPulse, même si lancé ailleurs
@@ -46,7 +47,22 @@ program
       projectRoot = parent;
     }
     const configPath = path.join(projectRoot, 'gitpulse.config.json');
-    if (!options.mirrorPath) {
+    let configUpdate: any = {};
+    if (fs.existsSync(configPath)) {
+      configUpdate = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+    }
+    if (options.mirrorPath) {
+      (configUpdate as any).mirrorRepoPath = options.mirrorPath;
+    }
+    if (key && value) {
+      if (["email", "name", "mirrorRepoPath"].includes(key)) {
+        (configUpdate as any)[key] = value;
+      } else {
+        console.log(`Unknown config key: ${key}`);
+        return;
+      }
+    }
+    if (!options.mirrorPath && !(key && value)) {
       // Affiche tout le contenu si aucun argument
       if (fs.existsSync(configPath)) {
         const raw = fs.readFileSync(configPath, 'utf-8');
@@ -56,15 +72,8 @@ program
       }
       return;
     }
-    // Charger la config existante pour respecter le type Config
-    let configUpdate: any = {};
-    if (fs.existsSync(configPath)) {
-      configUpdate = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    }
-    if (options.mirrorPath) {
-      (configUpdate as any).mirrorRepoPath = options.mirrorPath;
-    }
     require('./commands/config').setConfig(configUpdate);
+    console.log('Config updated:', configUpdate);
   });
 
 program.parse(process.argv);
