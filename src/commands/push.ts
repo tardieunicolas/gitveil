@@ -129,6 +129,9 @@ export function pushCommits(options: PushOptions): void {
     existingCommitDates = stdout.split("\n").filter(Boolean);
   } catch (e) {}
 
+  // Le compteur doit refléter le nombre de commits existants pour éviter les erreurs d'incrémentation
+  let counter = existingCommitDates.length;
+
   // Filtre les dates à commiter (uniquement les nouvelles)
   let newCommits = 0;
   const toCommit = Array.from(allDates)
@@ -158,7 +161,6 @@ export function pushCommits(options: PushOptions): void {
   } catch {}
 
   // Boucle synchrone pour les commits
-  let counter = initialCounter;
   let commitIndex = 0;
   const lastCommitIndex = toCommit.length - 1;
   const commitCmds: {cmd: string, env: any, isLast: boolean, date: string, idx: number}[] = [];
@@ -167,9 +169,8 @@ export function pushCommits(options: PushOptions): void {
     if (existingCommitDates.includes(date)) {
       continue;
     }
-    newCommits++;
     counter++;
-    commitIndex++;
+    newCommits++;
     const commitEnv = {
       ...process.env,
       GIT_COMMITTER_NAME: userName,
@@ -240,13 +241,4 @@ export function pushCommits(options: PushOptions): void {
   } catch (err: any) {
     log("error", `❌ Git push failed: ${err.message}`);
   }
-
-  // --- Axes d'évolution possibles ---
-  // - Utiliser l'API GitHub pour pousser sans dépôt local (mode cloud)
-  // - Paralléliser la lecture/écriture des fichiers JSON si beaucoup de fichiers
-  // - Ajouter un cache pour ne traiter que les nouveaux fichiers depuis le dernier push
-  // - Permettre de choisir la branche de push (option)
-  // - Ajouter un mode "dry-run" pour simuler le push sans rien modifier
-  // - Gérer les erreurs réseau et proposer un retry automatique
-  // - Ajouter des logs détaillés ou un mode verbose/silencieux
 }
