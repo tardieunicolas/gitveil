@@ -148,12 +148,15 @@ export function pushCommits(options: PushOptions): void {
         !existingCommitDates.includes(String(date).trim().replace(/\r|\n/g, ""))
     );
   const totalToCommit = toCommit.length;
-  console.log(
-    `📦 ${totalToCommit} commit(s) to create (not yet in history) out of ${allDates.size} extracted.`
-  );
+  if (allDates.size > 0) {
+    console.log(
+      `📦 ${totalToCommit} commit(s) to create (not yet in history) out of ${allDates.size} extracted`
+    );
+  }
   if (totalToCommit === 0) {
     // Rien à faire, on nettoie et on sort
-    console.log("📡 No new commits to push");
+    console.log();
+    console.log("Everything is up to date, nothing to push.");
     clearRecordsFolder(logsDir);
     return;
   }
@@ -245,6 +248,7 @@ export function pushCommits(options: PushOptions): void {
   process.stdout.write("\n");
   // Push automatique vers le dépôt distant (option --quiet pour accélérer)
   try {
+    console.log();
     console.log("> Pushing commits to remote repository... 🚀");
     execSync(`${gitCmdBase} push origin main --quiet`);
     console.log("> Push commits to remote completed ✅");
