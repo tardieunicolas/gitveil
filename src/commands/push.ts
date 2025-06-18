@@ -152,6 +152,7 @@ export function pushCommits(options: PushOptions): void {
     console.log(
       `📦 ${totalToCommit} commit(s) to create (not yet in history) out of ${allDates.size} extracted`
     );
+    console.log();
   }
   if (totalToCommit === 0) {
     // Rien à faire, on nettoie et on sort
@@ -231,9 +232,8 @@ export function pushCommits(options: PushOptions): void {
     } else {
       execSync(commit.cmd, { env: commit.env });
     }
-    console.log()
     process.stdout.write(
-      `\r > Commit created ${commit.idx + 1}/${totalToCommit} (${Math.round(
+      `\r> Commit ${commit.idx + 1}/${totalToCommit} (${Math.round(
         ((commit.idx + 1) / totalToCommit) * 100
       )}%)`
     );
