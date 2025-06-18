@@ -27,3 +27,4 @@ gitpulse.log
 gitpulse.config-private.json
 records-folder/
 archives/
+email-whitelist.json
