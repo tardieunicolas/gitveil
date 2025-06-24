@@ -2,7 +2,6 @@ import { execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import { log } from "../utils/logger";
-import { verifyEmailWorkflow } from "../utils/emailVerifier";
 
 interface RecordOptions {
   email: string;
@@ -49,13 +48,6 @@ export async function recordActivity(options: RecordOptions): Promise<void> {
         "warn",
         "No email provided and unable to retrieve from git config. All commits will be included."
       );
-    } else {
-      // Vérification de la whitelist et workflow de vérification d'email
-      const verified = await verifyEmailWorkflow(authorEmail);
-      if (!verified) {
-        log("error", `L'email ${authorEmail} n'a pas été vérifié. Opération annulée.`);
-        return;
-      }
     }
     // 2. Fetch latest changes
     console.log();
