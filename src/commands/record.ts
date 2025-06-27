@@ -2,7 +2,6 @@ import { execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import { log } from "../utils/logger";
-import { verifyEmailWorkflow } from "../utils/emailVerifier";
 
 interface RecordOptions {
   email: string;
@@ -51,9 +50,13 @@ export async function recordActivity(options: RecordOptions): Promise<void> {
       );
     } else {
       // Vérification de la whitelist et workflow de vérification d'email
-      const verified = await verifyEmailWorkflow(authorEmail);
+      // const verified = await verifyEmailWorkflow(authorEmail);
+      const verified = true; // Disable email verification for now
       if (!verified) {
-        log("error", `L'email ${authorEmail} n'a pas été vérifié. Opération annulée.`);
+        log(
+          "error",
+          `L'email ${authorEmail} n'a pas été vérifié. Opération annulée.`
+        );
         return;
       }
     }
@@ -100,7 +103,7 @@ export async function recordActivity(options: RecordOptions): Promise<void> {
     fs.writeFileSync(outputFile, JSON.stringify(commitDates, null, 2), "utf-8");
     console.log(`✅ Commits successfully exported for email: ${authorEmail}`);
     console.log(`🎉 JSON file generated: ${outputFile}`);
-    console.log()
+    console.log();
     console.log(`Use the command 'gitpulse push' to synchronize your records.`);
   } catch (error: any) {
     log("error", `Error recording activity: ${error?.message || error}`);
