@@ -20,12 +20,33 @@
 
 ---
 
-## Installation (one click)
+## Installation
 
 ```bash
-npm i
-npm run build
-npm install -g
+npm i git-veil -g
+```
+
+## Complete Setup
+
+```bash
+# 1. Initialize GitVeil in your target repository
+# Create a GitHub repository first, then run this command to set up the local mirror
+gitveil init
+
+# 2. Record your recent Git activity
+# Scans your Git history using your configured email to identify your commits
+# Creates record entries for each commit found in the history
+gitveil record
+
+# 3. Check the synchronization status
+# View pending records and sync status
+gitveil status
+
+# 4. Push anonymized commits to your GitHub repository
+# Pushes all recorded commits to your mirror repository (created in step 1)
+# Existing commits are ignored, no source code is published - only incremental 
+# README updates to preserve commit history while ensuring anonymity and security
+gitveil push
 ```
 
 ---
@@ -34,11 +55,13 @@ npm install -g
 
 - `gitveil init`: Initialize configuration
 - `gitveil record`: Extract and save filtered Git activity
-- `gitveil push`: Push anonymized commits to GitHub
 - `gitveil status`: Show sync status and pending records
+- `gitveil push`: Push anonymized commits to GitHub
 - `gitveil config`: Edit configuration (email, path, etc)
 
 ---
+
+You are now set up! Your GitHub activity graph will reflect your professional work—without exposing any code.
 
 ## Privacy
 

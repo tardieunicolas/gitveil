@@ -48,17 +48,6 @@ export async function recordActivity(options: RecordOptions): Promise<void> {
         "warn",
         "No email provided and unable to retrieve from git config. All commits will be included."
       );
-    } else {
-      // Vérification de la whitelist et workflow de vérification d'email
-      // const verified = await verifyEmailWorkflow(authorEmail);
-      const verified = true; // Disable email verification for now
-      if (!verified) {
-        log(
-          "error",
-          `L'email ${authorEmail} n'a pas été vérifié. Opération annulée.`
-        );
-        return;
-      }
     }
     // 2. Fetch latest changes
     console.log();

@@ -1,6 +1,6 @@
 {
   "name": "git-veil",
-  "version": "1.0.0-beta",
+  "version": "1.0.1-beta",
   "description": "A CLI tool for synchronizing development activities to a personal GitHub repository discreetly and confidentially. (BETA)",
   "main": "dist/cli.js",
   "bin": {
@@ -20,23 +20,28 @@
     "git",
     "cli",
     "github",
+    "activity",
+    "commits",
     "synchronization",
-    "privacy"
+    "privacy",
+    "anonymous",
+    "contribution-graph",
+    "developer-tools",
+    "git-history",
+    "code-privacy",
+    "commit-mirroring",
+    "github-activity"
   ],
   "author": "Nicolas Tardieu",
   "license": "MIT",
   "dependencies": {
     "commander": "^9.0.0",
-    "dotenv": "^16.5.0",
-    "nodemailer": "^7.0.3",
     "qrcode": "^1.5.4",
-    "simple-git": "^2.40.0",
     "winston": "^3.17.0"
   },
   "devDependencies": {
     "@types/jest": "^27.0.0",
     "@types/node": "^16.0.0",
-    "@types/nodemailer": "^6.4.17",
     "@types/qrcode": "^1.5.5",
     "@types/winston": "^2.4.4",
     "jest": "^27.0.0",
