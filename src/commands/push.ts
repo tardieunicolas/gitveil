@@ -175,7 +175,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     console.log();
     // Affiche un QR code vers GitHub (format petit)
     const qrAscii = await QRCode.toString("https://coff.ee/nicolastardieu", { type: "terminal", small: true });
-    console.log("If GitVeil has been valuable to you, please consider supporting its continued development with a coffee 964");
+    console.log("If GitVeil has been valuable to you, please consider supporting its continued development with a coffee ☕️");
     console.log("Thank you for trusting GitVeil. Support the project here: https://coff.ee/nicolastardieu");
     console.log();
     console.log(qrAscii);

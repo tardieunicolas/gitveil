@@ -4,7 +4,7 @@
   "description": "A CLI tool for synchronizing development activities to a personal GitHub repository discreetly and confidentially. (BETA)",
   "main": "dist/cli.js",
   "bin": {
-    "veil": "dist/cli.js"
+    "gitveil": "dist/cli.js"
   },
   "scripts": {
     "build": "tsc",
