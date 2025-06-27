@@ -1,7 +1,7 @@
 {
   "name": "gitpulse",
-  "version": "1.0.0",
-  "description": "A CLI tool for synchronizing development activities to a personal GitHub repository discreetly and confidentially.",
+  "version": "1.0.0-beta",
+  "description": "A CLI tool for synchronizing development activities to a personal GitHub repository discreetly and confidentially. (BETA)",
   "main": "dist/cli.js",
   "bin": {
     "gitpulse": "dist/cli.js"
