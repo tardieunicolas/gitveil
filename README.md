@@ -2,25 +2,25 @@
 
 # 🚀 GitPulse
 
-**Gardez votre GitHub vivant, sans exposer votre code.**
+**Keep your GitHub active, without exposing your code.**
 
 ---
 
-## Présentation
+## Overview
 
-**GitPulse** est un outil CLI local qui synchronise vos activités de développement professionnelles vers un dépôt GitHub personnel, de façon **discrète**, **automatisée** et **confidentielle**. Il rejoue vos commits sous forme anonymisée, sans jamais copier de code source.
-
----
-
-## Pourquoi choisir GitPulse ?
-
-- 👀 **Visibilité** : Maintenez un graph de contributions actif sur GitHub, même pour du travail privé.
-- 🔒 **Confidentialité** : Aucun code n'est copié, tout reste local, 100% privé.
-- 🧘 **Simplicité** : Installation rapide, configuration guidée, usage minimaliste.
+**GitPulse** is a local CLI tool that syncs your professional development activity to a personal GitHub repository, in a **discreet**, **automated**, and **confidential** way. It replays your commits in an anonymized form, never copying any source code.
 
 ---
 
-## Installation (en un clic)
+## Why choose GitPulse ?
+
+- 👀 **Visibility**: Keep your GitHub contribution graph active, even for private work.
+- 🔒 **Privacy**: No code is copied, everything stays local, 100% private.
+- 🧘 **Simplicity**: Quick installation, guided configuration, minimalist usage.
+
+---
+
+## Installation (one click)
 
 ```bash
 npm i
@@ -30,48 +30,48 @@ npm install -g
 
 ---
 
-## Commandes principales
+## Main commands
 
-- `gitpulse init` : Initialise la configuration
-- `gitpulse record` : Extrait et enregistre l’activité Git filtrée
-- `gitpulse push` : Pousse les commits anonymisés vers GitHub.
-- `gitpulse status` : Affiche l’état de synchronisation, les records en attentes.
-- `gitpulse config` : Modifie la configuration (email, chemin, etc).
+- `gitpulse init`: Initialize configuration
+- `gitpulse record`: Extract and save filtered Git activity
+- `gitpulse push`: Push anonymized commits to GitHub
+- `gitpulse status`: Show sync status and pending records
+- `gitpulse config`: Edit configuration (email, path, etc)
 
 ---
 
-## Confidentialité
+## Privacy
 
-![Confidentialité](https://img.shields.io/badge/100%25%20privé-0%25%20code%20partagé-blue)
+![Privacy](https://img.shields.io/badge/100%25%20private-0%25%20code%20shared-blue)
 
- - Aucun code n’est copié
- - Aucun accès réseau vers les dépôts pro
- - Tout se fait localement, sur votre machine
+ - No code is ever copied
+ - No network access to professional repositories
+ - Everything happens locally, on your machine
  
 
 ---
 
-## Flow par défaut
+## Default flow
 
-1. Détection du contexte Git
-2. Extraction des commits liés à l’email
-3. Génération de commits discrets
-4. Push vers GitHub
-
----
-
-## Capture d’écran
-
-Avant :
-
-![Avant](img/gitpulse-demo-2024.png)
-
-Après :
-
-![Après](img/gitpulse-demo-2024-after.png)
+1. Detect Git context
+2. Extract commits linked to your email
+3. Generate discrete commits
+4. Push to GitHub
 
 ---
 
-## Licence
+## Screenshot
+
+Before :
+
+![Before](img/gitpulse-demo-2024.png)
+
+After :
+
+![After](img/gitpulse-demo-2024-after.png)
+
+---
+
+## License
 
 MIT
