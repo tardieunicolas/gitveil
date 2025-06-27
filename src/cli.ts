@@ -7,7 +7,7 @@ import { checkStatus } from './commands/status';
 const program = new Command();
 
 program
-  .name('gitpulse')
+  .name('veil')
   .description('CLI tool for synchronizing development activity to GitHub')
   .version('1.0.0');
 
@@ -42,8 +42,8 @@ program
     const fs = require('fs');
     const path = require('path');
     const { execSync } = require('child_process');
-    // Toujours utiliser le gitpulse.config.json du module courant
-    const configPath = path.join(__dirname, '../gitpulse.config.json');
+    // Toujours utiliser le gitveil.config.json du module courant
+    const configPath = path.join(__dirname, '../gitveil.config.json');
     let configUpdate: Record<string, string> = {};
     if (fs.existsSync(configPath)) {
       configUpdate = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
@@ -96,7 +96,7 @@ program
         const raw = fs.readFileSync(configPath, 'utf-8');
         console.log(raw);
       } else {
-        console.log('gitpulse.config.json not found');
+        console.log('gitveil.config.json not found');
       }
       return;
     }

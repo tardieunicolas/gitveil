@@ -1,10 +1,10 @@
 {
-  "name": "gitpulse",
+  "name": "git-veil",
   "version": "1.0.0-beta",
   "description": "A CLI tool for synchronizing development activities to a personal GitHub repository discreetly and confidentially. (BETA)",
   "main": "dist/cli.js",
   "bin": {
-    "gitpulse": "dist/cli.js"
+    "veil": "dist/cli.js"
   },
   "scripts": {
     "build": "tsc",
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/gitpulse.git"
+    "url": "https://github.com/yourusername/gitveil.git"
   },
   "keywords": [
     "git",
@@ -23,7 +23,7 @@
     "synchronization",
     "privacy"
   ],
-  "author": "Your Name",
+  "author": "Nicolas Tardieu",
   "license": "MIT",
   "dependencies": {
     "commander": "^9.0.0",

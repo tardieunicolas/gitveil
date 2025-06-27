@@ -2,8 +2,8 @@ import { Config } from '../types';
 import * as fs from 'fs';
 import * as path from 'path';
 
-// Toujours utiliser le gitpulse.config.json du module (racine projet)
-const CONFIG_PATH = path.resolve(__dirname, '../../gitpulse.config.json');
+// Toujours utiliser le gitveil.config.json du module (racine projet)
+const CONFIG_PATH = path.resolve(__dirname, '../../gitveil.config.json');
 
 export function setConfig(newConfig: Config): void {
     const currentConfig = loadCurrentConfig();

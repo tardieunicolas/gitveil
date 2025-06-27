@@ -57,9 +57,9 @@ export async function sendVerificationCode(email: string, code: string) {
     },
   });
   await transporter.sendMail({
-    from: process.env.SMTP_FROM || "no-reply@gitpulse.local",
+    from: process.env.SMTP_FROM || "no-reply@gitveil.local",
     to: email,
-    subject: "GitPulse verification code",
+    subject: "GitVeil verification code",
     text: `Your verification code is: ${code}`,
   });
 }

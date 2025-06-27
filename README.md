@@ -1,6 +1,6 @@
 # ![GitPulse Badge](https://img.shields.io/badge/GitHub%20Activity-Synced%20by%20GitPulse-brightgreen)
 
-# 🚀 GitPulse
+# 🚀 GitVeil
 
 **Keep your GitHub active, without exposing your code.**
 
@@ -8,11 +8,11 @@
 
 ## Overview
 
-**GitPulse** is a local CLI tool that syncs your professional development activity to a personal GitHub repository, in a **discreet**, **automated**, and **confidential** way. It replays your commits in an anonymized form, never copying any source code.
+**GitVeil** is a local CLI tool that syncs your professional development activity to a personal GitHub repository, in a **discreet**, **automated**, and **confidential** way. It replays your commits in an anonymized form, never copying any source code.
 
 ---
 
-## Why choose GitPulse ?
+## Why choose GitVeil ?
 
 - 👀 **Visibility**: Keep your GitHub contribution graph active, even for private work.
 - 🔒 **Privacy**: No code is copied, everything stays local, 100% private.
@@ -32,11 +32,11 @@ npm install -g
 
 ## Main commands
 
-- `gitpulse init`: Initialize configuration
-- `gitpulse record`: Extract and save filtered Git activity
-- `gitpulse push`: Push anonymized commits to GitHub
-- `gitpulse status`: Show sync status and pending records
-- `gitpulse config`: Edit configuration (email, path, etc)
+- `gitveil init`: Initialize configuration
+- `gitveil record`: Extract and save filtered Git activity
+- `gitveil push`: Push anonymized commits to GitHub
+- `gitveil status`: Show sync status and pending records
+- `gitveil config`: Edit configuration (email, path, etc)
 
 ---
 

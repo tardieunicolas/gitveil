@@ -18,7 +18,7 @@ const logger = createLogger({
     ),
     transports: [
         new transports.Console(),
-        new transports.File({ filename: path.join(logDir, 'gitpulse.log') })
+        new transports.File({ filename: path.join(logDir, 'gitveil.log') })
     ],
 });
 

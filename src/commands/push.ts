@@ -26,17 +26,17 @@ function clearRecordsFolder(recordsFolderPath: string) {
 
 // Fonction principale pour pousser les commits anonymisés
 export async function pushCommits(options: PushOptions): Promise<void> {
-  // Recherche la racine du projet GitPulse (pour toujours utiliser la bonne config)
+  // Recherche la racine du projet GitVeil (pour toujours utiliser la bonne config)
   let projectRoot = path.dirname(require.main?.filename || process.argv[1]);
-  while (!fs.existsSync(path.join(projectRoot, "gitpulse.config.json"))) {
+  while (!fs.existsSync(path.join(projectRoot, "gitveil.config.json"))) {
     const parent = path.dirname(projectRoot);
     if (parent === projectRoot) break;
     projectRoot = parent;
   }
-  const configPath = path.join(projectRoot, "gitpulse.config.json");
+  const configPath = path.join(projectRoot, "gitveil.config.json");
   let mirrorRepoPath = "";
-  let userName = "GitPulse";
-  let userEmail = "gitpulse@example.com";
+  let userName = "GitVeil";
+  let userEmail = "gitveil@example.com";
   // Lecture de la config du module (toujours à la racine)
   if (fs.existsSync(configPath)) {
     const config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
@@ -44,7 +44,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     userName = config.name || userName;
     userEmail = config.email || userEmail;
   } else {
-    log("error", "gitpulse.config.json not found.");
+    log("error", "gitveil.config.json not found.");
     return;
   }
 
@@ -139,7 +139,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
   } catch (e) {}
   if (!hasCommit) {
     if (!fs.existsSync(readmePath)) {
-      fs.writeFileSync(readmePath, "# GitPulse\n");
+      fs.writeFileSync(readmePath, "# GitVeil\n");
     }
     execSync(`git -C "${mirrorRepoPath}" add README.md`);
     execSync(`git -C "${mirrorRepoPath}" commit -m "Initial commit"`);
@@ -175,9 +175,8 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     console.log();
     // Affiche un QR code vers GitHub (format petit)
     const qrAscii = await QRCode.toString("https://coff.ee/nicolastardieu", { type: "terminal", small: true });
-    console.log("If GitPulse has been valuable to you, please consider supporting its continued development with a coffee ☕");
-    console.log("Your contribution makes a real difference. Every donation, big or small, helps keep the project alive and thriving.");
-    console.log("Thank you for trusting GitPulse. Support the project here: https://coff.ee/nicolastardieu");
+    console.log("If GitVeil has been valuable to you, please consider supporting its continued development with a coffee 964");
+    console.log("Thank you for trusting GitVeil. Support the project here: https://coff.ee/nicolastardieu");
     console.log();
     console.log(qrAscii);
     console.log();

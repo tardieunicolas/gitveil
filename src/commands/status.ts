@@ -7,9 +7,9 @@ interface StatusOptions {
 }
 
 function findProjectRoot(): string {
-  // Find the root of the GitPulse project (where gitpulse.config.json is located)
+  // Find the root of the GitVeil project (where gitveil.config.json is located)
   let currentDir = path.resolve(__dirname, "../../");
-  while (!fs.existsSync(path.join(currentDir, "gitpulse.config.json"))) {
+  while (!fs.existsSync(path.join(currentDir, "gitveil.config.json"))) {
     const parent = path.dirname(currentDir);
     if (parent === currentDir) break;
     currentDir = parent;
@@ -40,6 +40,6 @@ export function checkStatus(options: StatusOptions): void {
     console.log("> Synchronization: WAITING ⏳");
     console.log(`> Files ready to record: ${readyCount}`);
     console.log()
-    console.log("Use the command 'gitpulse push' to synchronize your records.");
+    console.log("Use the command 'veil push' to synchronize your records.");
   }
 }
