@@ -1,6 +1,5 @@
 # Node modules
 node_modules/
-archives/
 
 # Build output
 dist/
@@ -27,5 +26,6 @@ coverage/
 gitpulse.log
 gitpulse.config-private.json
 records-folder/
-archives/
+private-records-folder/
+archives
 email-whitelist.json
