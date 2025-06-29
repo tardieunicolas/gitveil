@@ -81,7 +81,6 @@ You are now set up! Your GitHub activity graph will reflect your professional wo
 **GitVeil is 100% transparent and auditable - source code freely available:**
 
 - 📂 **Complete source code** available in this GitHub repository
-- 🔍 **Open source**: Full TypeScript sources in `/src/` directory
 - 📖 **Readable code**: Clean, well-documented TypeScript with clear structure
 - 🛡️ **No telemetry**: No data collection or tracking
 - 🔒 **Local only**: All processing happens on your machine
@@ -105,8 +104,6 @@ npm test      # Run tests to ensure integrity
 - Transparent TypeScript codebase with clear functionality
 - MIT licensed for maximum transparency and trust
 
-📋 **[Complete Audit Guide](./AUDIT.md)** - Full instructions for security review
-
 ---
 
 ## Default flow
@@ -122,11 +119,11 @@ npm test      # Run tests to ensure integrity
 
 Before :
 
-![Before](img/gitpulse-demo-2024.png)
+![Before](https://github.com/tardieunicolas/gitveil/blob/main/assets/gitpulse-demo-2024.png)
 
 After :
 
-![After](img/gitpulse-demo-2024-after.png)
+![After](https://github.com/tardieunicolas/gitveil/blob/main/assets/gitpulse-demo-2024-after.png)
 
 ---
 

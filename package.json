@@ -10,8 +10,6 @@
     "build": "tsc",
     "start": "node dist/cli.js",
     "dev": "ts-node src/cli.ts",
-    "prepublishOnly": "npm run build",
-    "publish:dry": "npm publish --dry-run",
     "audit:security": "npm audit",
     "audit:deps": "npm ls --depth=0"
   },
@@ -35,12 +33,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nicolastardieu/gitveil.git"
+    "url": "https://github.com/tardieunicolas/gitveil.git"
   },
   "bugs": {
-    "url": "https://github.com/nicolastardieu/gitveil/issues"
+    "url": "https://github.com/tardieunicolas/gitveil/issues"
   },
-  "homepage": "https://github.com/nicolastardieu/gitveil#readme",
+  "homepage": "https://github.com/tardieunicolas/gitveil#readme",
   "engines": {
     "node": ">=14.0.0"
   },
@@ -55,10 +53,10 @@
     "typescript": "^4.5.0"
   },
   "files": [
-   "dist",
+    "dist",
+    "package.json",
     "README.md",
     "LICENSE",
-    "package.json",
     "SECURITY.md",
     "AUDIT.md",
     "TRANSPARENCY.md"
