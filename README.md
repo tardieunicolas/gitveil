@@ -3,11 +3,11 @@
 ![Open Source](https://img.shields.io/badge/Open%20Source-Yes-brightgreen)
 ![Privacy](https://img.shields.io/badge/100%25%20private-0%25%20code%20shared-blue)
 ![Auditable](https://img.shields.io/badge/Code-Fully%20Auditable-brightgreen)
+![npm](https://img.shields.io/npm/dw/git-veil)
 
 # 🚀 GitVeil
 
 **Keep your GitHub contribution graph active without exposing your private code.**
-
 
 ---
 
@@ -48,6 +48,7 @@ npm install git-veil -g
 ```
 
 Verify the installation:
+
 ```bash
 gitveil --version
 ```
@@ -78,6 +79,7 @@ gitveil config --init
 ```
 
 This will guide you through setting up:
+
 - Your email (used for authoring anonymous commits in target repository)
 - Your name (used for authoring anonymous commits in target repository)
 - Path to your target repository (where anonymous commits will be stored)
@@ -113,12 +115,6 @@ gitveil push
 
 ---
 
-## Overview
-
-GitVeil is a local CLI tool that automatically synchronizes your professional development activity to a personal GitHub repository. It creates anonymized commits that maintain your contribution streak while keeping your actual code completely private.
-
----
-
 ## Privacy
 
 ![Privacy](https://img.shields.io/badge/100%25%20private-0%25%20code%20shared-blue)
@@ -145,18 +141,21 @@ GitVeil bridges the gap between your private development work and your public Gi
 ### Step-by-Step Process
 
 #### 1. **Detection & Analysis**
+
 - **Email Identification**: GitVeil reads `git config user.email` from your current repository
 - **Commit Scanning**: Analyzes your local Git history to find commits authored by your email
 - **Date Extraction**: Records commit dates and frequency patterns
 - **Privacy Filter**: Only commit metadata (dates/times) are processed - **never your code**
 
 #### 2. **Anonymous Commit Generation**
+
 - **Target Repository**: Creates commits in your configured public repository
 - **Identity Mapping**: Uses your configured public identity (name/email for target repo)
 - **Timestamp Preservation**: Maintains original commit dates to preserve activity patterns
 - **Content Generation**: Creates minimal, harmless commit content (e.g., updating counter in README)
 
 #### 3. **Synchronization**
+
 - **Local Processing**: All operations happen locally first
 - **GitHub Push**: Only anonymous commits are pushed to your public repository
 - **Activity Graph**: Your GitHub contribution graph reflects your actual work schedule
@@ -169,15 +168,18 @@ GitVeil bridges the gap between your private development work and your public Gi
 ### Common Issues
 
 **"No Git repository found"**
+
 - Make sure you're running GitVeil from a Git repository
 - Verify Git is installed and accessible
 
 **"No commits found for email"**
+
 - GitVeil uses the `git config user.email` from your current repository
 - Verify your Git email configuration: `git config user.email`
 - Check if you have commits in the current repository: `git log --oneline`
 
 **"Target repository not found"**
+
 - Ensure the target repository path exists and is a Git repository
 - Create the repository first: `git init` in the target directory
 
@@ -202,7 +204,7 @@ If **GitVeil** has been helpful to you, consider supporting its continued develo
 
 [![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-☕-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://coff.ee/nicolastardieu)
 
-Your support helps keep this project alive and motivates further improvements. 
+Your support helps keep this project alive and motivates further improvements.
 Even a small gesture makes a big difference — thank you! 🙏
 
 ---

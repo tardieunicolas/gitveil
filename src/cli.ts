@@ -4,13 +4,16 @@ import { recordActivity } from "./commands/record";
 import { pushCommits } from "./commands/push";
 import { checkStatus } from "./commands/status";
 import { handleConfigCommand } from "./commands/config";
+import { readFileSync } from "fs";
+import { join } from "path";
 
+const packageJson = JSON.parse(readFileSync(join(__dirname, "../package.json"), "utf8"));
 const program = new Command();
 
 program
   .name("gitveil")
   .description("CLI tool for synchronizing development activity to GitHub")
-  .version("1.0.1-beta");
+  .version(packageJson.version);
 
 program
   .command("record")

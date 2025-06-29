@@ -182,7 +182,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
       small: true,
     });
     console.log(
-      "If GitVeil has been valuable to you, please consider supporting its continued development with a coffee ☕️"
+      "If GitVeil has been valuable to you, please consider supporting its continued development"
     );
     console.log(
       "Thank you for trusting GitVeil. Support the project here: https://coff.ee/nicolastardieu"
