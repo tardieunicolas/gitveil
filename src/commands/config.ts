@@ -4,7 +4,7 @@ import * as path from 'path';
 import { execSync } from 'child_process';
 import * as readline from 'readline';
 
-// Toujours utiliser le gitveil.config.json du module (racine projet)
+// Always use the gitveil.config.json from the module (project root)
 const CONFIG_PATH = path.resolve(__dirname, '../../gitveil.config.json');
 const VALID_KEYS = ['email', 'name', 'targetRepoPath'] as const;
 

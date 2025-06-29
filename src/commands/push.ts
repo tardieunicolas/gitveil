@@ -3,12 +3,12 @@ import * as path from "path";
 import { execSync } from "child_process";
 import QRCode from "qrcode";
 
-// Options pour la commande push (peut être étendu pour d'autres paramètres)
+// Options for the push command (can be extended for other parameters)
 interface PushOptions {
   target?: string;
 }
 
-// Supprime tous les fichiers et dossiers dans records-folder après un push réussi
+// Removes all files and folders in records-folder after a successful push
 function clearRecordsFolder(recordsFolderPath: string) {
   if (!fs.existsSync(recordsFolderPath)) return;
   const files = fs.readdirSync(recordsFolderPath);
@@ -17,15 +17,15 @@ function clearRecordsFolder(recordsFolderPath: string) {
     if (fs.statSync(filePath).isFile()) {
       fs.unlinkSync(filePath);
     } else if (fs.statSync(filePath).isDirectory()) {
-      // Suppression récursive des sous-dossiers si besoin
+      // Recursive deletion of subdirectories if needed
       fs.rmSync(filePath, { recursive: true, force: true });
     }
   }
 }
 
-// Fonction principale pour pousser les commits anonymisés
+// Main function for pushing anonymized commits
 export async function pushCommits(options: PushOptions): Promise<void> {
-  // Recherche la racine du projet GitVeil (pour toujours utiliser la bonne config)
+  // Search for the GitVeil project root (to always use the correct config)
   let projectRoot = path.dirname(require.main?.filename || process.argv[1]);
   while (!fs.existsSync(path.join(projectRoot, "gitveil.config.json"))) {
     const parent = path.dirname(projectRoot);
@@ -36,7 +36,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
   let targetRepoPath = "";
   let userName = "GitVeil";
   let userEmail = "gitveil@example.com";
-  // Lecture de la config du module (toujours à la racine)
+  // Read the module config (always at the root)
   if (fs.existsSync(configPath)) {
     const config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
     targetRepoPath = config.targetRepoPath;
@@ -49,7 +49,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
 
   console.log();
   console.log(`> Mirror repo path: ${targetRepoPath}`);
-  // Vérifie la présence du README.md (sert de fichier de commit)
+  // Check for the presence of README.md (serves as commit file)
   const readmePath = path.join(targetRepoPath, "README.md");
   let initialCounter = 0;
   if (fs.existsSync(readmePath)) {
@@ -59,22 +59,22 @@ export async function pushCommits(options: PushOptions): Promise<void> {
       if (counterMatch) initialCounter = parseInt(counterMatch[1], 10);
     } catch (e) {
       console.warn(
-        "Impossible de lire la valeur initiale du Counter dans README.md"
+        "Unable to read the initial Counter value in README.md"
       );
     }
   } else {
-    // Crée un README.md vide si besoin
+    // Create an empty README.md if needed
     fs.writeFileSync(readmePath, "");
     console.log("📄 README.md created in targetRepoPath.");
   }
 
-  // Lecture mémoire optimisée des fichiers JSON (évite de parser plusieurs fois)
+  // Memory-optimized reading of JSON files (avoids parsing multiple times)
   const logsDir = path.join(projectRoot, "records-folder");
   if (!fs.existsSync(logsDir)) {
     console.error(`❌ Logs directory not found: ${logsDir}`);
     return;
   }
-  // On ne lit que les fichiers .json
+  // Only read .json files
   const files = fs.readdirSync(logsDir).filter((f) => f.endsWith(".json"));
   const allDates = new Set<string>();
   for (const file of files) {
@@ -89,10 +89,10 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     }
   }
 
-  // Initialisation du dépôt git uniquement si besoin
+  // Initialize git repository only if needed
   const gitDir = path.join(targetRepoPath, ".git");
   if (!fs.existsSync(gitDir)) {
-    // Si le dépôt n'existe pas, on l'initialise et on configure l'utilisateur
+    // If the repository doesn't exist, initialize it and configure the user
     console.log(`🆕 Initializing git repo in ${targetRepoPath}`);
     execSync(`git -C "${targetRepoPath}" init`);
     execSync(`git -C "${targetRepoPath}" config user.name "${userName}"`);
@@ -108,7 +108,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
       }
     }
   } else {
-    // Si le dépôt existe, on vérifie la config utilisateur
+    // If the repository exists, check user config
     let currentName = "";
     try {
       currentName = execSync(`git -C "${targetRepoPath}" config user.name`)
@@ -127,7 +127,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
       execSync(`git -C "${targetRepoPath}" config user.email "${userEmail}"`);
   }
 
-  // Vérifie si le repo n'a aucun commit et pousse un commit initial si besoin
+  // Check if the repo has no commits and push an initial commit if needed
   let hasCommit = false;
   try {
     const logResult = execSync(`git -C "${targetRepoPath}" log --oneline main`, {
@@ -146,7 +146,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     console.log("> Initial commit created and pushed on main.");
   }
 
-  // Récupère les dates déjà présentes dans l'historique git (évite les doublons)
+  // Get dates already present in git history (avoid duplicates)
   let existingCommitDates: string[] = [];
   try {
     const gitLogCmd = `git -C "${targetRepoPath}" log --pretty=format:%ad --date=iso8601-strict`;
@@ -154,10 +154,10 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     existingCommitDates = stdout.split("\n").filter(Boolean);
   } catch (e) {}
 
-  // Le compteur doit refléter le nombre de commits existants pour éviter les erreurs d'incrémentation
+  // The counter must reflect the number of existing commits to avoid increment errors
   let counter = existingCommitDates.length;
 
-  // Filtre les dates à commiter (uniquement les nouvelles)
+  // Filter dates to commit (only new ones)
   let newCommits = 0;
   const toCommit = Array.from(allDates)
     .sort()
@@ -171,7 +171,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
       `📦 ${totalToCommit} commit(s) to create (not yet in history) out of ${allDates.size} extracted`
     );
     console.log();
-    // Affiche un QR code vers GitHub (format petit)
+    // Display a QR code to GitHub (small format)
     const qrAscii = await QRCode.toString("https://coff.ee/nicolastardieu", { type: "terminal", small: true });
     console.log("If GitVeil has been valuable to you, please consider supporting its continued development with a coffee ☕️");
     console.log("Thank you for trusting GitVeil. Support the project here: https://coff.ee/nicolastardieu");
@@ -180,7 +180,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     console.log();
   }
   if (totalToCommit === 0) {
-    // Rien à faire, on nettoie et on sort
+    // Nothing to do, clean up and exit
     console.log();
     console.log("Everything is up to date, nothing to push.");
     clearRecordsFolder(logsDir);
@@ -198,7 +198,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
       .trim();
   } catch {}
 
-  // Boucle synchrone pour les commits
+  // Synchronous loop for commits
   const lastCommitIndex = toCommit.length - 1;
   const commitCmds: {
     cmd: string;
@@ -228,7 +228,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
         idx,
       });
     } else {
-      // Dernier commit : modifie le README.md
+      // Last commit: modify README.md
       const content = [`Counter: ${counter}`, ""].join("\n");
       fs.writeFileSync(readmePath, content);
       commitCmds.push({
@@ -264,7 +264,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     );
   }
 
-  // Restaure la config git locale d'origine
+  // Restore original local git config
   try {
     if (oldUserName)
       execSync(`${gitCmdBase} config user.name "${oldUserName}"`);
@@ -273,13 +273,13 @@ export async function pushCommits(options: PushOptions): Promise<void> {
   } catch {}
 
   process.stdout.write("\n");
-  // Push automatique vers le dépôt distant (option --quiet pour accélérer)
+  // Automatic push to remote repository (--quiet option to speed up)
   try {
     console.log();
     console.log("> Pushing commits to remote repository... 🚀");
     execSync(`${gitCmdBase} push origin main --quiet`);
     console.log("> Push commits to remote completed ✅");
-    // Nettoyage des fichiers temporaires après push
+    // Clean up temporary files after push
     clearRecordsFolder(logsDir);
   } catch (err: any) {
     console.error(`❌ Git push failed: ${err.message}`);

@@ -72,9 +72,10 @@ Examples:
   });
 
 program
-  .command("help")
+  .command("guide")
+  .alias("help")
   .alias("h")
-  .description("Show detailed help and usage examples")
+  .description("Show a quick start guide and usage examples")
   .action(() => {
     console.log(`
 🚀 GitVeil - Keep your GitHub active, without exposing your code
@@ -93,7 +94,7 @@ COMMANDS:
   record    Scan and record your Git activity
   status    Check synchronization status
   push      Push anonymized commits to GitHub
-  help      Show this help message
+  guide     Show this quick start guide
 
 OPTIONS:
   -h, --help     Show help for any command
