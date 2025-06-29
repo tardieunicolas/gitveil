@@ -23,7 +23,7 @@ This project is fully open source and auditable:
 If you discover a security vulnerability, please report it responsibly:
 
 1. **Do NOT** open a public issue
-2. Email: [your-email@example.com]
+2. Email: [ntardieu.contact@gmail.com](mailto:ntardieu.contact@gmail.com?subject=GitVeil:%20Security%20Vulnerability%20Report)
 3. Include detailed description of the vulnerability
 4. We will respond within 48 hours
 
