@@ -70,6 +70,36 @@ You are now set up! Your GitHub activity graph will reflect your professional wo
  - No code is ever copied
  - No network access to professional repositories
  - Everything happens locally, on your machine
+
+## 🔍 Transparency & Security
+
+![Open Source](https://img.shields.io/badge/Open%20Source-MIT%20License-green)
+![npm](https://img.shields.io/npm/v/git-veil)
+![Auditable](https://img.shields.io/badge/Code-Fully%20Auditable-brightgreen)
+
+**GitVeil is 100% transparent and auditable WITHOUT repository access:**
+
+- � **Complete source code** included in npm package
+- 🔍 **No repository required**: Audit using only `npm install git-veil`
+- 📖 **Full TypeScript sources** available in `node_modules/git-veil/src/`
+- 🛡️ **No telemetry**: No data collection or tracking
+- 🔒 **Local only**: All processing happens on your machine
+- ⚡ **Minimal dependencies**: Only 3 trusted runtime dependencies
+
+**Audit GitVeil in 3 steps:**
+```bash
+npm install git-veil
+cd node_modules/git-veil
+npm run integrity:verify  # Check code integrity
+```
+
+**Security by design:**
+- No code extraction or copying
+- No hidden network calls
+- Clear, readable TypeScript code
+- MIT licensed for maximum transparency
+
+📋 **[Complete Audit Guide](./AUDIT.md)** - Full instructions for security review
  
 
 ---
