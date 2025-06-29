@@ -1,7 +1,6 @@
 import { execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
-import { log } from "../utils/logger";
 
 interface RecordOptions {
   email: string;
@@ -21,8 +20,7 @@ export async function recordActivity(options: RecordOptions): Promise<void> {
       try {
         authorEmail = execSync("git config user.email").toString().trim();
       } catch (e) {
-        log(
-          "warn",
+        console.warn(
           `Failed to get local git user.email: ${
             e instanceof Error ? e.message : String(e)
           }`
@@ -33,8 +31,7 @@ export async function recordActivity(options: RecordOptions): Promise<void> {
             .trim();
           console.log(`Using global git user.email: ${authorEmail}`);
         } catch (e2) {
-          log(
-            "warn",
+          console.warn(
             `Failed to get global git user.email: ${
               e2 instanceof Error ? e2.message : String(e2)
             }`
@@ -44,8 +41,7 @@ export async function recordActivity(options: RecordOptions): Promise<void> {
     }
     if (!authorEmail) {
       filterByEmail = false;
-      log(
-        "warn",
+      console.warn(
         "No email provided and unable to retrieve from git config. All commits will be included."
       );
     }
@@ -55,7 +51,7 @@ export async function recordActivity(options: RecordOptions): Promise<void> {
     try {
       execSync("git fetch origin", { stdio: "inherit" });
     } catch (e) {
-      log("warn", "Could not fetch from origin. Continuing anyway.");
+      console.warn("Could not fetch from origin. Continuing anyway.");
     }
     // 3. Extract commit dates
     const branch = "origin/main";
@@ -66,13 +62,12 @@ export async function recordActivity(options: RecordOptions): Promise<void> {
     try {
       commitsRaw = execSync(gitLogCmd).toString();
     } catch (e) {
-      log("error", "Error running git log.");
+      console.error("Error running git log.");
       return;
     }
     const commitDates = commitsRaw.split("\n").filter(Boolean);
     if (dryRun) {
-      log(
-        "info",
+      console.log(
         `[DRY RUN] Commits found${
           filterByEmail ? " for " + authorEmail : ""
         }: ${commitDates.length}`
@@ -95,6 +90,6 @@ export async function recordActivity(options: RecordOptions): Promise<void> {
     console.log();
     console.log(`Use the command 'gitveil push' to synchronize your records.`);
   } catch (error: any) {
-    log("error", `Error recording activity: ${error?.message || error}`);
+    console.error(`Error recording activity: ${error?.message || error}`);
   }
 }

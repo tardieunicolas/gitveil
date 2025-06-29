@@ -1,4 +1,3 @@
-import { log } from "../utils/logger";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -28,7 +27,7 @@ export function checkStatus(options: StatusOptions): void {
     );
     readyCount = filtered.length;
   } else {
-    log("warn", `⚠️  Records folder does not exist: ${recordsDir}`);
+    console.warn(`⚠️  Records folder does not exist: ${recordsDir}`);
   }
 
   if (readyCount === 0) {

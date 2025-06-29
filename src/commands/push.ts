@@ -1,6 +1,5 @@
 import * as fs from "fs";
 import * as path from "path";
-import { log } from "../utils/logger";
 import { execSync } from "child_process";
 import QRCode from "qrcode";
 
@@ -44,7 +43,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     userName = config.name || userName;
     userEmail = config.email || userEmail;
   } else {
-    log("error", "gitveil.config.json not found.");
+    console.error("gitveil.config.json not found.");
     return;
   }
 
@@ -59,8 +58,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
       const counterMatch = readmeContent.match(/Counter: (\d+)/);
       if (counterMatch) initialCounter = parseInt(counterMatch[1], 10);
     } catch (e) {
-      log(
-        "warn",
+      console.warn(
         "Impossible de lire la valeur initiale du Counter dans README.md"
       );
     }
@@ -73,7 +71,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
   // Lecture mémoire optimisée des fichiers JSON (évite de parser plusieurs fois)
   const logsDir = path.join(projectRoot, "records-folder");
   if (!fs.existsSync(logsDir)) {
-    log("error", `❌ Logs directory not found: ${logsDir}`);
+    console.error(`❌ Logs directory not found: ${logsDir}`);
     return;
   }
   // On ne lit que les fichiers .json
@@ -87,7 +85,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
         json.forEach((entry: any) => allDates.add(entry));
       }
     } catch (e) {
-      log("warn", `⚠️ Error parsing file ${file}`);
+      console.warn(`⚠️ Error parsing file ${file}`);
     }
   }
 
@@ -284,6 +282,6 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     // Nettoyage des fichiers temporaires après push
     clearRecordsFolder(logsDir);
   } catch (err: any) {
-    log("error", `❌ Git push failed: ${err.message}`);
+    console.error(`❌ Git push failed: ${err.message}`);
   }
 }
