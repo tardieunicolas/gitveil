@@ -29,9 +29,9 @@ npm i git-veil -g
 ## Complete Setup
 
 ```bash
-# 1. Initialize GitVeil in your target repository
-# Create a GitHub repository first, then run this command to set up the local mirror
-gitveil init
+# 1. Initialize GitVeil configuration
+# Configure your email, name, and target repository path
+gitveil config --init
 
 # 2. Record your recent Git activity
 # Scans your Git history using your configured email to identify your commits
@@ -53,7 +53,7 @@ gitveil push
 
 ## Main commands
 
-- `gitveil init`: Initialize configuration
+- `gitveil config --init`: Initialize configuration
 - `gitveil record`: Extract and save filtered Git activity
 - `gitveil status`: Show sync status and pending records
 - `gitveil push`: Push anonymized commits to GitHub
@@ -92,6 +92,19 @@ Before :
 After :
 
 ![After](img/gitpulse-demo-2024-after.png)
+
+---
+
+## Support
+
+If **GitVeil** has been helpful to you, consider supporting its continued development:
+
+[![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-☕-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://coff.ee/nicolastardieu)
+
+
+Your support helps keep this project alive and motivates further improvements.  
+Even a small gesture makes a big difference — thank you! 🙏
+
 
 ---
 

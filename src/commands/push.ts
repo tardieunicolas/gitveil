@@ -34,13 +34,13 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     projectRoot = parent;
   }
   const configPath = path.join(projectRoot, "gitveil.config.json");
-  let mirrorRepoPath = "";
+  let targetRepoPath = "";
   let userName = "GitVeil";
   let userEmail = "gitveil@example.com";
   // Lecture de la config du module (toujours à la racine)
   if (fs.existsSync(configPath)) {
     const config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
-    mirrorRepoPath = config.mirrorRepoPath;
+    targetRepoPath = config.targetRepoPath;
     userName = config.name || userName;
     userEmail = config.email || userEmail;
   } else {
@@ -49,9 +49,9 @@ export async function pushCommits(options: PushOptions): Promise<void> {
   }
 
   console.log();
-  console.log(`> Mirror repo path: ${mirrorRepoPath}`);
+  console.log(`> Mirror repo path: ${targetRepoPath}`);
   // Vérifie la présence du README.md (sert de fichier de commit)
-  const readmePath = path.join(mirrorRepoPath, "README.md");
+  const readmePath = path.join(targetRepoPath, "README.md");
   let initialCounter = 0;
   if (fs.existsSync(readmePath)) {
     try {
@@ -67,7 +67,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
   } else {
     // Crée un README.md vide si besoin
     fs.writeFileSync(readmePath, "");
-    console.log("📄 README.md created in mirrorRepoPath.");
+    console.log("📄 README.md created in targetRepoPath.");
   }
 
   // Lecture mémoire optimisée des fichiers JSON (évite de parser plusieurs fois)
@@ -92,20 +92,20 @@ export async function pushCommits(options: PushOptions): Promise<void> {
   }
 
   // Initialisation du dépôt git uniquement si besoin
-  const gitDir = path.join(mirrorRepoPath, ".git");
+  const gitDir = path.join(targetRepoPath, ".git");
   if (!fs.existsSync(gitDir)) {
     // Si le dépôt n'existe pas, on l'initialise et on configure l'utilisateur
-    console.log(`🆕 Initializing git repo in ${mirrorRepoPath}`);
-    execSync(`git -C "${mirrorRepoPath}" init`);
-    execSync(`git -C "${mirrorRepoPath}" config user.name "${userName}"`);
-    execSync(`git -C "${mirrorRepoPath}" config user.email "${userEmail}"`);
+    console.log(`🆕 Initializing git repo in ${targetRepoPath}`);
+    execSync(`git -C "${targetRepoPath}" init`);
+    execSync(`git -C "${targetRepoPath}" config user.name "${userName}"`);
+    execSync(`git -C "${targetRepoPath}" config user.email "${userEmail}"`);
     if (fs.existsSync(readmePath)) {
-      execSync(`git -C "${mirrorRepoPath}" add README.md`);
+      execSync(`git -C "${targetRepoPath}" add README.md`);
       const status = execSync(
-        `git -C "${mirrorRepoPath}" status --porcelain`
+        `git -C "${targetRepoPath}" status --porcelain`
       ).toString();
       if (status.trim()) {
-        execSync(`git -C "${mirrorRepoPath}" commit -m "Initial commit"`);
+        execSync(`git -C "${targetRepoPath}" commit -m "Initial commit"`);
         console.log("✅ Initial commit created.");
       }
     }
@@ -113,26 +113,26 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     // Si le dépôt existe, on vérifie la config utilisateur
     let currentName = "";
     try {
-      currentName = execSync(`git -C "${mirrorRepoPath}" config user.name`)
+      currentName = execSync(`git -C "${targetRepoPath}" config user.name`)
         .toString()
         .trim();
     } catch {}
     let currentEmail = "";
     try {
-      currentEmail = execSync(`git -C "${mirrorRepoPath}" config user.email`)
+      currentEmail = execSync(`git -C "${targetRepoPath}" config user.email`)
         .toString()
         .trim();
     } catch {}
     if (currentName !== userName)
-      execSync(`git -C "${mirrorRepoPath}" config user.name "${userName}"`);
+      execSync(`git -C "${targetRepoPath}" config user.name "${userName}"`);
     if (currentEmail !== userEmail)
-      execSync(`git -C "${mirrorRepoPath}" config user.email "${userEmail}"`);
+      execSync(`git -C "${targetRepoPath}" config user.email "${userEmail}"`);
   }
 
   // Vérifie si le repo n'a aucun commit et pousse un commit initial si besoin
   let hasCommit = false;
   try {
-    const logResult = execSync(`git -C "${mirrorRepoPath}" log --oneline main`, {
+    const logResult = execSync(`git -C "${targetRepoPath}" log --oneline main`, {
       stdio: "pipe",
     }).toString();
     if (logResult.trim()) hasCommit = true;
@@ -141,17 +141,17 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     if (!fs.existsSync(readmePath)) {
       fs.writeFileSync(readmePath, "# GitVeil\n");
     }
-    execSync(`git -C "${mirrorRepoPath}" add README.md`);
-    execSync(`git -C "${mirrorRepoPath}" commit -m "Initial commit"`);
-    execSync(`git -C "${mirrorRepoPath}" push origin main --quiet`);
-    execSync(`git -C "${mirrorRepoPath}" config core.autocrlf input`);
+    execSync(`git -C "${targetRepoPath}" add README.md`);
+    execSync(`git -C "${targetRepoPath}" commit -m "Initial commit"`);
+    execSync(`git -C "${targetRepoPath}" push origin main --quiet`);
+    execSync(`git -C "${targetRepoPath}" config core.autocrlf input`);
     console.log("> Initial commit created and pushed on main.");
   }
 
   // Récupère les dates déjà présentes dans l'historique git (évite les doublons)
   let existingCommitDates: string[] = [];
   try {
-    const gitLogCmd = `git -C "${mirrorRepoPath}" log --pretty=format:%ad --date=iso8601-strict`;
+    const gitLogCmd = `git -C "${targetRepoPath}" log --pretty=format:%ad --date=iso8601-strict`;
     const stdout = execSync(gitLogCmd).toString();
     existingCommitDates = stdout.split("\n").filter(Boolean);
   } catch (e) {}
@@ -188,7 +188,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     clearRecordsFolder(logsDir);
     return;
   }
-  const gitCmdBase = `git -C "${mirrorRepoPath}"`;
+  const gitCmdBase = `git -C "${targetRepoPath}"`;
   let oldUserName = "";
   let oldUserEmail = "";
   try {

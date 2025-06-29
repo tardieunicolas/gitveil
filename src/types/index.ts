@@ -9,7 +9,7 @@ export interface Commit {
 export interface Config {
    name: string;
     email: string;
-    mirrorRepoPath: string;
+    targetRepoPath: string;
 }
 export interface Activity {
     commits: Commit[];

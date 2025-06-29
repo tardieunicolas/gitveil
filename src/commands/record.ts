@@ -93,7 +93,7 @@ export async function recordActivity(options: RecordOptions): Promise<void> {
     console.log(`✅ Commits successfully exported for email: ${authorEmail}`);
     console.log(`🎉 JSON file generated: ${outputFile}`);
     console.log();
-    console.log(`Use the command 'veil push' to synchronize your records.`);
+    console.log(`Use the command 'gitveil push' to synchronize your records.`);
   } catch (error: any) {
     log("error", `Error recording activity: ${error?.message || error}`);
   }
