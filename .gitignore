@@ -25,5 +25,6 @@ coverage/
 # gitpulse
 gitpulse.log
 gitpulse.config-private.json
+gitveil.config.json
 records-folder/
 private-records-folder/

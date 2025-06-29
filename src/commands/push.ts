@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { execSync } from "child_process";
 import QRCode from "qrcode";
+import { log } from "console";
 
 // Options for the push command (can be extended for other parameters)
 interface PushOptions {
@@ -44,6 +45,9 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     userEmail = config.email || userEmail;
   } else {
     console.error("gitveil.config.json not found.");
+    console.log(
+      "Please run `gitveil config --init` to create the configuration file."
+    );
     return;
   }
 
@@ -58,9 +62,7 @@ export async function pushCommits(options: PushOptions): Promise<void> {
       const counterMatch = readmeContent.match(/Counter: (\d+)/);
       if (counterMatch) initialCounter = parseInt(counterMatch[1], 10);
     } catch (e) {
-      console.warn(
-        "Unable to read the initial Counter value in README.md"
-      );
+      console.warn("Unable to read the initial Counter value in README.md");
     }
   } else {
     // Create an empty README.md if needed
@@ -130,9 +132,12 @@ export async function pushCommits(options: PushOptions): Promise<void> {
   // Check if the repo has no commits and push an initial commit if needed
   let hasCommit = false;
   try {
-    const logResult = execSync(`git -C "${targetRepoPath}" log --oneline main`, {
-      stdio: "pipe",
-    }).toString();
+    const logResult = execSync(
+      `git -C "${targetRepoPath}" log --oneline main`,
+      {
+        stdio: "pipe",
+      }
+    ).toString();
     if (logResult.trim()) hasCommit = true;
   } catch (e) {}
   if (!hasCommit) {
@@ -172,9 +177,16 @@ export async function pushCommits(options: PushOptions): Promise<void> {
     );
     console.log();
     // Display a QR code to GitHub (small format)
-    const qrAscii = await QRCode.toString("https://coff.ee/nicolastardieu", { type: "terminal", small: true });
-    console.log("If GitVeil has been valuable to you, please consider supporting its continued development with a coffee ☕️");
-    console.log("Thank you for trusting GitVeil. Support the project here: https://coff.ee/nicolastardieu");
+    const qrAscii = await QRCode.toString("https://coff.ee/nicolastardieu", {
+      type: "terminal",
+      small: true,
+    });
+    console.log(
+      "If GitVeil has been valuable to you, please consider supporting its continued development with a coffee ☕️"
+    );
+    console.log(
+      "Thank you for trusting GitVeil. Support the project here: https://coff.ee/nicolastardieu"
+    );
     console.log();
     console.log(qrAscii);
     console.log();

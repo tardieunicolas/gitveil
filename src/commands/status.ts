@@ -39,6 +39,6 @@ export function checkStatus(options: StatusOptions): void {
     console.log("> Synchronization: WAITING ⏳");
     console.log(`> Files ready to record: ${readyCount}`);
     console.log()
-    console.log("Use the command 'veil push' to synchronize your records.");
+    console.log("Use the command 'gitveil push' to synchronize your records.");
   }
 }

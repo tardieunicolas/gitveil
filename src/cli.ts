@@ -10,7 +10,7 @@ const program = new Command();
 program
   .name("gitveil")
   .description("CLI tool for synchronizing development activity to GitHub")
-  .version("1.0.0");
+  .version("1.0.1-beta");
 
 program
   .command("record")
@@ -23,7 +23,7 @@ program
 Examples:
   $ gitveil record                    # Record activity using configured email
   $ gitveil record --email user@example.com  # Record activity for specific email
-  $ gitveil record --dry-run          # Preview commits without saving them`
+  $ gitveil record --dry-run          # Preview without saving`
   )
   .action((options) => recordActivity(options));
 
@@ -34,7 +34,7 @@ program
     "after",
     `
 Examples:
-  $ gitveil push                      # Push all pending commits to GitHub`
+  $ gitveil push                      # Push anonymous commits to GitHub`
   )
   .action((options) => pushCommits(options));
 
@@ -56,15 +56,15 @@ program
   .argument("[value]", "Value to set for the key")
   .option(
     "--init",
-    "Initialize all config values from current git context and working directory"
+    "Initialize configuration interactively"
   )
   .addHelpText(
     "after",
     `
 Examples:
   $ gitveil config --init             # Initialize configuration interactively
-  $ gitveil config email user@example.com  # Set email configuration, using git user.email if not provided
-  $ gitveil config name username  # Set username configuration, using git user.name if not provided
+  $ gitveil config email user@personal.com  # Set email for target repo commits
+  $ gitveil config name username      # Set name for target repo commits
   $ gitveil config targetRepoPath /path/to/repo  # Set target repository path`
   )
   .action(async (key, value, options) => {
@@ -81,31 +81,41 @@ program
 🚀 GitVeil - Keep your GitHub active, without exposing your code
 
 QUICK START:
-  1. gitveil config --init    # Initialize configuration
-  2. gitveil record           # Record your Git activity  
-  3. gitveil status           # Check what will be synced
-  4. gitveil push             # Push anonymized commits to GitHub
+  1. CREATE TARGET REPOSITORY:
+     mkdir my-target-repo && cd my-target-repo
+     git init
+     gitveil config --init
+     
+  2. RECORD AND SYNC:
+     gitveil record           # Record your Git activity  
+     gitveil status           # Check what will be synced
+     gitveil push             # Push anonymous commits to GitHub
+
+IMPORTANT:
+  • Configured email/name are used for authoring anonymous commits
+  • GitVeil automatically detects your commits using git config user.email from each repository
+  • No manual email matching required - detection is automatic
 
 WORKFLOW:
   record → status → push → repeat
 
 COMMANDS:
-  config    Configure GitVeil (email, repository path, etc.)
+  config    Configure email, name, and target repository
   record    Scan and record your Git activity
   status    Check synchronization status
-  push      Push anonymized commits to GitHub
+  push      Push anonymous commits to GitHub
   guide     Show this quick start guide
 
-OPTIONS:
-  -h, --help     Show help for any command
-  -V, --version  Show version number
-
-For detailed help on any command:
-  gitveil <command> --help
+For detailed help: gitveil <command> --help
 
 Examples:
+  # Set up target repository
+  mkdir my-target-repo && cd my-target-repo
+  git init
   gitveil config --init
-  gitveil record --dry-run
+  
+  # Daily workflow
+  gitveil record
   gitveil status
   gitveil push
 `);
