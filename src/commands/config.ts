@@ -2,13 +2,13 @@ import { Config } from '../types';
 import * as fs from 'fs';
 import * as path from 'path';
 import { execSync } from 'child_process';
+import * as readline from 'readline';
 
 // Toujours utiliser le gitveil.config.json du module (racine projet)
 const CONFIG_PATH = path.resolve(__dirname, '../../gitveil.config.json');
 const VALID_KEYS = ['email', 'name', 'targetRepoPath'] as const;
 
 interface ConfigOptions {
-    here?: boolean;
     init?: boolean;
 }
 
@@ -22,6 +22,21 @@ function getGitConfig(field: 'user.name' | 'user.email'): string | null {
             return null;
         }
     }
+}
+
+function promptUser(question: string, defaultValue?: string): Promise<string> {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+
+    return new Promise((resolve) => {
+        const prompt = defaultValue ? `${question} [${defaultValue}]: ` : `${question}: `;
+        rl.question(prompt, (answer) => {
+            rl.close();
+            resolve(answer.trim() || defaultValue || '');
+        });
+    });
 }
 
 export function setConfig(newConfig: Partial<Config>): void {
@@ -42,19 +57,28 @@ export async function handleConfigCommand(
     }
 
     if (options.init) {
-        // Initialize all values from git and current directory
-        configUpdate['targetRepoPath'] = process.cwd();
+        // Initialize all values from git and current directory with interactive prompts
+        console.log('🔧 GitVeil Configuration Setup');
+        console.log('Press Enter to use the default value shown in brackets.\n');
         
-        const name = getGitConfig('user.name');
-        const email = getGitConfig('user.email');
+        // Detect default values
+        const detectedName = getGitConfig('user.name') ?? 'unknown';
+        const detectedEmail = getGitConfig('user.email') ?? 'unknown';
+        const detectedPath = process.cwd();
         
+        // Interactive prompts with detected defaults
+        const name = await promptUser('Your name', detectedName || undefined);
+        const email = await promptUser('Your email', detectedEmail || undefined);
+        const targetRepoPath = await promptUser('Target repository path', detectedPath);
+        
+        // Update config with user responses
         if (name) configUpdate['name'] = name;
-        else console.log('Could not get git user.name');
-        
         if (email) configUpdate['email'] = email;
-        else console.log('Could not get git user.email');
+        if (targetRepoPath) configUpdate['targetRepoPath'] = targetRepoPath;
         
-    } else if (options.here && key) {
+        console.log('\n✅ Configuration initialized successfully!');
+        
+    } else if (options.init && key) {
         if (key === 'targetRepoPath') {
             configUpdate['targetRepoPath'] = process.cwd();
         } else if (key === 'name') {
@@ -78,7 +102,7 @@ export async function handleConfigCommand(
         }
     }
 
-    if (!options.here && !options.init && !(key && value)) {
+    if (!options.init && !(key && value)) {
         // Display all content if no arguments
         if (fs.existsSync(CONFIG_PATH)) {
             const raw = fs.readFileSync(CONFIG_PATH, 'utf-8');

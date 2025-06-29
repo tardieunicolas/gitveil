@@ -19,6 +19,7 @@ export async function recordActivity(options: RecordOptions): Promise<void> {
     if (!authorEmail) {
       try {
         authorEmail = execSync("git config user.email").toString().trim();
+        console.log(`Using local git user.email: ${authorEmail}`);
       } catch (e) {
         console.warn(
           `Failed to get local git user.email: ${
@@ -67,12 +68,7 @@ export async function recordActivity(options: RecordOptions): Promise<void> {
     }
     const commitDates = commitsRaw.split("\n").filter(Boolean);
     if (dryRun) {
-      console.log(
-        `[DRY RUN] Commits found${
-          filterByEmail ? " for " + authorEmail : ""
-        }: ${commitDates.length}`
-      );
-      commitDates.forEach((date) => console.log(date));
+      console.log(`[DRY RUN] Commits found ${commitDates.length}`);
       return;
     }
     // 4. Write to JSON file
@@ -85,8 +81,8 @@ export async function recordActivity(options: RecordOptions): Promise<void> {
       fs.mkdirSync(target, { recursive: true });
     }
     fs.writeFileSync(outputFile, JSON.stringify(commitDates, null, 2), "utf-8");
-    console.log(`✅ Commits successfully exported for email: ${authorEmail}`);
-    console.log(`🎉 JSON file generated: ${outputFile}`);
+    console.log(`✅ Commits successfully recorded`);
+    console.log(`🎉 You're all set — ready to sync`);
     console.log();
     console.log(`Use the command 'gitveil push' to synchronize your records.`);
   } catch (error: any) {
