@@ -1,4 +1,5 @@
-# ![GitPulse Badge](https://img.shields.io/badge/GitHub%20Activity-Synced%20by%20GitPulse-brightgreen)
+# ![GitVeil Badge](https://img.shields.io/badge/GitHub%20Activity-Synced%20by%20GitVeil-brightgreen)
+
 
 # 🚀 GitVeil
 
@@ -44,7 +45,7 @@ gitveil status
 
 # 4. Push anonymized commits to your GitHub repository
 # Pushes all recorded commits to your mirror repository (created in step 1)
-# Existing commits are ignored, no source code is published - only incremental 
+# Existing commits are ignored, no source code is published - only incremental
 # README updates to preserve commit history while ensuring anonymity and security
 gitveil push
 ```
@@ -67,9 +68,9 @@ You are now set up! Your GitHub activity graph will reflect your professional wo
 
 ![Privacy](https://img.shields.io/badge/100%25%20private-0%25%20code%20shared-blue)
 
- - No code is ever copied
- - No network access to professional repositories
- - Everything happens locally, on your machine
+- No code is ever copied
+- No network access to professional repositories
+- Everything happens locally, on your machine
 
 ## 🔍 Transparency & Security
 
@@ -77,30 +78,34 @@ You are now set up! Your GitHub activity graph will reflect your professional wo
 ![npm](https://img.shields.io/npm/v/git-veil)
 ![Auditable](https://img.shields.io/badge/Code-Fully%20Auditable-brightgreen)
 
-**GitVeil is 100% transparent and auditable WITHOUT repository access:**
+**GitVeil is 100% transparent and auditable - source code freely available:**
 
-- � **Complete source code** included in npm package
-- 🔍 **No repository required**: Audit using only `npm install git-veil`
-- 📖 **Full TypeScript sources** available in `node_modules/git-veil/src/`
+- 📂 **Complete source code** available in this GitHub repository
+- 🔍 **Open source**: Full TypeScript sources in `/src/` directory
+- 📖 **Readable code**: Clean, well-documented TypeScript with clear structure
 - 🛡️ **No telemetry**: No data collection or tracking
 - 🔒 **Local only**: All processing happens on your machine
-- ⚡ **Minimal dependencies**: Only 3 trusted runtime dependencies
+- ⚡ **Minimal dependencies**: Only essential, trusted runtime dependencies
 
-**Audit GitVeil in 3 steps:**
+**Audit GitVeil easily:**
+
 ```bash
-npm install git-veil
-cd node_modules/git-veil
-npm run integrity:verify  # Check code integrity
+# Clone and examine the source code
+git clone https://github.com/tardieunicolas/gitveil
+cd gitveil
+npm install
+npm run build  # Verify the build process
+npm test      # Run tests to ensure integrity
 ```
 
 **Security by design:**
-- No code extraction or copying
-- No hidden network calls
-- Clear, readable TypeScript code
-- MIT licensed for maximum transparency
+
+- No code extraction or copying from your professional repos
+- No hidden network calls or data transmission
+- Transparent TypeScript codebase with clear functionality
+- MIT licensed for maximum transparency and trust
 
 📋 **[Complete Audit Guide](./AUDIT.md)** - Full instructions for security review
- 
 
 ---
 
@@ -131,10 +136,8 @@ If **GitVeil** has been helpful to you, consider supporting its continued develo
 
 [![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-☕-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://coff.ee/nicolastardieu)
 
-
-Your support helps keep this project alive and motivates further improvements.  
+Your support helps keep this project alive and motivates further improvements. 
 Even a small gesture makes a big difference — thank you! 🙏
-
 
 ---
 
