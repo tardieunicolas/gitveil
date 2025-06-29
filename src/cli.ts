@@ -17,16 +17,27 @@ program
   .description('Record Git activity based on filters')
   .option('--email <email>', 'Git email to filter activity')
   .option('--dry-run', 'Show commits without creating them')
+  .addHelpText('after', `
+Examples:
+  $ gitveil record                    # Record activity using configured email
+  $ gitveil record --email user@example.com  # Record activity for specific email
+  $ gitveil record --dry-run          # Preview commits without saving them`)
   .action((options) => recordActivity(options));
 
 program
   .command('push')
   .description('Push anonymized commits to GitHub')
+  .addHelpText('after', `
+Examples:
+  $ gitveil push                      # Push all pending commits to GitHub`)
   .action((options) => pushCommits(options));
 
 program
   .command('status')
   .description('Check the synchronization status of the mirror repository')
+  .addHelpText('after', `
+Examples:
+  $ gitveil status                    # Show sync status and pending records`)
   .action((options) => checkStatus(options));
 
 program
@@ -36,8 +47,53 @@ program
   .argument('[value]', 'Value to set for the key')
   .option('--here', 'Set value from current git context or working directory')
   .option('--init', 'Initialize all config values from current git context and working directory')
+  .addHelpText('after', `
+Examples:
+  $ gitveil config --init             # Initialize configuration interactively
+  $ gitveil config email user@example.com  # Set email configuration
+  $ gitveil config targetRepoPath /path/to/repo  # Set target repository path
+  $ gitveil config --here             # Set config from current directory`)
   .action(async (key, value, options) => {
     await handleConfigCommand(key, value, options);
+  });
+
+program
+  .command('help')
+  .alias('h')
+  .description('Show detailed help and usage examples')
+  .action(() => {
+    console.log(`
+🚀 GitVeil - Keep your GitHub active, without exposing your code
+
+QUICK START:
+  1. gitveil config --init    # Initialize configuration
+  2. gitveil record           # Record your Git activity  
+  3. gitveil status           # Check what will be synced
+  4. gitveil push             # Push anonymized commits to GitHub
+
+WORKFLOW:
+  record → status → push → repeat
+
+COMMANDS:
+  config    Configure GitVeil (email, repository path, etc.)
+  record    Scan and record your Git activity
+  status    Check synchronization status
+  push      Push anonymized commits to GitHub
+  help      Show this help message
+
+OPTIONS:
+  -h, --help     Show help for any command
+  -V, --version  Show version number
+
+For detailed help on any command:
+  gitveil <command> --help
+
+Examples:
+  gitveil config --init
+  gitveil record --dry-run
+  gitveil status
+  gitveil push
+`);
   });
 
 program.parse(process.argv);
