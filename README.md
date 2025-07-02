@@ -9,13 +9,10 @@
 
 **Keep your GitHub contribution graph active without exposing your private code.**
 
----
-
 ## Overview
 
 **GitVeil** is a local CLI tool that syncs your professional development activity to a personal GitHub repository, in a **discreet**, **automated**, and **confidential** way. It replays your commits in an anonymized form, never copying any source code.
 
----
 
 ## Why choose GitVeil ?
 
@@ -23,7 +20,6 @@
 - 🔒 **Privacy**: No code is copied, everything stays local, 100% private.
 - 🧘 **Simplicity**: Quick installation, guided configuration, minimalist usage.
 
----
 
 ## See GitVeil in action:
 
@@ -37,7 +33,6 @@
 
 Your contribution graph stays active without exposing any private work!
 
----
 
 ## 📦 Installation
 
@@ -53,67 +48,39 @@ Verify the installation:
 gitveil --version
 ```
 
----
+
 
 ## 🚀 Quick Start
 
-Get up and running in 2 simple steps:
-
-### Step 1: Create and Configure Your Target Repository
-
-**Create a dedicated Git repository for your anonymous commits:**
+### 1. Setup Target Repository
 
 ```bash
-# Create a new directory for your target repository
-mkdir my-target-repo
-cd my-target-repo
-
-# Initialize as a Git repository
-git init
-
-# Add a remote origin (your personal GitHub repo)
-git remote add origin https://github.com/yourusername/my-target-repo.git
-
-# Initialize GitVeil configuration
+mkdir my-target-repo && cd my-target-repo
+git init && git remote add origin https://github.com/yourusername/my-target-repo.git
+git branch -M main && git push -u origin main
 gitveil config --init
 ```
 
-This will guide you through setting up:
-
-- Your email (used for authoring anonymous commits in target repository)
-- Your name (used for authoring anonymous commits in target repository)
-- Path to your target repository (where anonymous commits will be stored)
-
-**Important:** GitVeil automatically identifies your commits using the `git config user.email` from each private repository you scan. The configured email is only used for creating anonymous commits in your target repository.
-
-### Step 2: Record and Sync Your Activity
-
-Navigate to any Git repository and start recording:
+### 2. Record & Sync Activity
 
 ```bash
-# Record your Git activity
-gitveil record
-
-# Check what will be synchronized
-gitveil status
-
-# Push anonymous commits to GitHub
-gitveil push
+cd /path/to/your/work/repo
+gitveil record && gitveil push
 ```
 
-**That's it!** Your GitHub activity graph will now reflect your work.
+**Done!** Your GitHub graph now reflects your private work.
 
----
+
 
 ## Main commands
 
 - `gitveil record`: Extract and save filtered Git activity
-- `gitveil status`: Show sync status and pending records
+- `gitveil status`: Show sync status and pending record
 - `gitveil push`: Push anonymized commits to GitHub
 - `gitveil config --init`: Edit configuration (email, path, etc)
 - `gitveil guide`: Show quick start guide
 
----
+
 
 ## Privacy
 
@@ -123,78 +90,53 @@ gitveil push
 - No network access to professional repositories
 - Everything happens locally, on your machine
 
----
 
-## Default flow
-
-1. Detect Git context
-2. Extract commits linked to your email
-3. Generate discrete commits
-4. Push to GitHub
-
----
 
 ## How It Works
 
-GitVeil bridges the gap between your private development work and your public GitHub profile through a sophisticated yet simple anonymization process.
+1. **Scan**: Reads commit dates from your repositories (no code access)
+2. **Generate**: Creates anonymous commits in your target repository
+3. **Sync**: Pushes to GitHub to update your contribution graph
 
-### Step-by-Step Process
+**Privacy**: Only commit timestamps are processed - your code never leaves your machine.
 
-#### 1. **Detection & Analysis**
-
-- **Email Identification**: GitVeil reads `git config user.email` from your current repository
-- **Commit Scanning**: Analyzes your local Git history to find commits authored by your email
-- **Date Extraction**: Records commit dates and frequency patterns
-- **Privacy Filter**: Only commit metadata (dates/times) are processed - **never your code**
-
-#### 2. **Anonymous Commit Generation**
-
-- **Target Repository**: Creates commits in your configured public repository
-- **Identity Mapping**: Uses your configured public identity (name/email for target repo)
-- **Timestamp Preservation**: Maintains original commit dates to preserve activity patterns
-- **Content Generation**: Creates minimal, harmless commit content (e.g., updating counter in README)
-
-#### 3. **Synchronization**
-
-- **Local Processing**: All operations happen locally first
-- **GitHub Push**: Only anonymous commits are pushed to your public repository
-- **Activity Graph**: Your GitHub contribution graph reflects your actual work schedule
-- **Streak Maintenance**: Keeps your contribution streak alive
-
----
 
 ## 🛠 Troubleshooting
 
-### Common Issues
 
-**"No Git repository found"**
+| Issue | Solution |
+|-------|----------|
+| **"No Git repository found"** | • Run command from inside a Git repository<br>• Check if `.git` folder exists<br>• Run `git status` to verify Git initialization |
+| **"No commits found for email"** | • Check `git config user.email` matches your commits<br>• Use `git log --author="your@email.com"` to verify<br>• Update email with `git config user.email "correct@email.com"` |
+| **"Target repository not found"** | • Ensure target path exists and is Git-initialized<br>• Run `gitveil config --init` to set correct path<br>• Verify remote with `git remote -v` |
+| **"Permission denied (publickey)"** | • Check SSH key setup: `ssh -T git@github.com`<br>• Add SSH key to GitHub or use HTTPS instead<br>• Run `git config --global credential.helper store` |
+| **"Nothing to commit"** | • Ensure you have commits in source repository<br>• Check date range with `gitveil config`<br>• Verify email configuration matches commit author |
+| **"Configuration issues"** | • Run `gitveil config --init`<br>• Check file permissions in target directory<br>• Verify paths are absolute and accessible |
 
-- Make sure you're running GitVeil from a Git repository
-- Verify Git is installed and accessible
 
-**"No commits found for email"**
+---
 
-- GitVeil uses the `git config user.email` from your current repository
-- Verify your Git email configuration: `git config user.email`
-- Check if you have commits in the current repository: `git log --oneline`
+## ❓ FAQ
 
-**"Target repository not found"**
+**Q: Is my code safe?**  
+A: Yes. GitVeil only reads commit timestamps, never your source code.
 
-- Ensure the target repository path exists and is a Git repository
-- Create the repository first: `git init` in the target directory
+**Q: Can I use multiple repositories?**  
+A: Yes. Run `gitveil record` in each repository you want to track.
+
+**Q: Will it affect my work repositories?**  
+A: No. GitVeil is read-only for your work repos.
+
+**Q: What if I miss some days?**  
+A: Run `gitveil record && gitveil push` - original dates are preserved.
+
+**Q: Can I preview before pushing?**  
+A: Yes. Use `gitveil status` to see pending commits.
+
+**Q: How does email detection work?**  
+A: Uses `git config user.email` from each repository automatically.
 
 ### Getting Help
-
-```bash
-# Show detailed help for any command
-gitveil <command> --help
-
-# Show quick start guide
-gitveil guide
-
-# Check version
-gitveil --version
-```
 
 ---
 
@@ -206,6 +148,16 @@ If **GitVeil** has been helpful to you, consider supporting its continued develo
 
 Your support helps keep this project alive and motivates further improvements.
 Even a small gesture makes a big difference — thank you! 🙏
+
+---
+
+### 📧 Questions & Suggestions
+
+Have questions, suggestions, or feedback? I'd love to hear from you!
+
+[![Email](https://img.shields.io/badge/Email-Contact%20me-blue?style=for-the-badge&logo=gmail&logoColor=white)](mailto:ntardieu.contact@gmail.com?subject=GitVeil%20-%20Question/Suggestion)
+
+Whether it's a bug report, feature request, or just a quick question, don't hesitate to reach out.
 
 ---
 
