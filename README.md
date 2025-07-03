@@ -9,6 +9,10 @@
 
 **Keep your GitHub contribution graph active without exposing your private code.**
 
+## 🆕 What's New in v1.x.x
+
+> **[View Full Changelog](CHANGELOG.md)** 
+
 ## Overview
 
 **GitVeil** is a local CLI tool that syncs your professional development activity to a personal GitHub repository, in a **discreet**, **automated**, and **confidential** way. It replays your commits in an anonymized form, never copying any source code.
