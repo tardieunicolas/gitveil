@@ -1,18 +1,34 @@
 import { execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
+import { clearRecordsFolder } from "../utils/fileUtils";
 
 interface RecordOptions {
   email: string;
   dryRun?: boolean;
   target?: string;
+  clear?: boolean;
 }
 
 export async function recordActivity(options: RecordOptions): Promise<void> {
-  let { email, dryRun = false, target = "./records-folder" } = options;
+  let {
+    email,
+    dryRun = false,
+    clear = false,
+    target = "./records-folder",
+  } = options;
   // Always resolve records-folder relative to the project root
   const projectRoot = path.resolve(__dirname, "../../");
   target = path.join(projectRoot, "records-folder");
+
+  // If clear option is enabled, clear the records folder and return
+  if (clear) {
+    console.log("> Clearing records folder...");
+    clearRecordsFolder(target);
+    console.log("Records folder cleared with success");
+    return;
+  }
+
   try {
     let authorEmail = email;
     let filterByEmail = true;
