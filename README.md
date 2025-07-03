@@ -9,7 +9,7 @@
 
 **Keep your GitHub contribution graph active without exposing your private code.**
 
-## 🆕 What's New in v1.x.x
+## 🆕 What's New in v1.0.3
 
 > **[View Full Changelog](CHANGELOG.md)** 
 

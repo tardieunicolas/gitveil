@@ -1,6 +1,6 @@
 {
   "name": "git-veil",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A CLI tool for synchronizing development activities to a personal GitHub repository discreetly and confidentially.",
   "main": "dist/cli.js",
   "bin": {
