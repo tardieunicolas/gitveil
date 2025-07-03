@@ -3,25 +3,11 @@ import * as path from "path";
 import { execSync } from "child_process";
 import QRCode from "qrcode";
 import { log } from "console";
+import { clearRecordsFolder } from "../utils/fileUtils";
 
 // Options for the push command (can be extended for other parameters)
 interface PushOptions {
   target?: string;
-}
-
-// Removes all files and folders in records-folder after a successful push
-function clearRecordsFolder(recordsFolderPath: string) {
-  if (!fs.existsSync(recordsFolderPath)) return;
-  const files = fs.readdirSync(recordsFolderPath);
-  for (const file of files) {
-    const filePath = path.join(recordsFolderPath, file);
-    if (fs.statSync(filePath).isFile()) {
-      fs.unlinkSync(filePath);
-    } else if (fs.statSync(filePath).isDirectory()) {
-      // Recursive deletion of subdirectories if needed
-      fs.rmSync(filePath, { recursive: true, force: true });
-    }
-  }
 }
 
 // Main function for pushing anonymized commits
