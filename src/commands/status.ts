@@ -27,18 +27,22 @@ export function checkStatus(options: StatusOptions): void {
     );
     readyCount = filtered.length;
   } else {
-    console.warn(`⚠️  Records folder does not exist: ${recordsDir}`);
+    console.log(`No records found.`);
+    console.log();
+    console.log(
+      "Use the command 'gitveil record' on private repositories to create records."
+    );
   }
 
   if (readyCount === 0) {
-    console.log()
+    console.log();
     console.log("> Synchronization: UP TO DATE ✔️");
     console.log("Everything is up to date, nothing to push.");
   } else {
-    console.log()
+    console.log();
     console.log("> Synchronization: WAITING ⏳");
     console.log(`> Files ready to record: ${readyCount}`);
-    console.log()
+    console.log();
     console.log("Use the command 'gitveil push' to synchronize your records.");
   }
 }
