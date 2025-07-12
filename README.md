@@ -5,76 +5,41 @@
 ![Auditable](https://img.shields.io/badge/Code-Fully%20Auditable-brightgreen)
 ![npm](https://img.shields.io/npm/dw/git-veil)
 
-# 🚀 GitVeil
+# GitVeil
 
 **Keep your GitHub contribution graph active without exposing your private code.**
+
+![Before](https://github.com/tardieunicolas/gitveil/blob/main/assets/how-it-work.gif)
 
 ## 🆕 What's New in v1.0.3
 
 > **[View Full Changelog](CHANGELOG.md)** 
 
-## Overview
+## How To Use
 
-**GitVeil** is a local CLI tool that syncs your professional development activity to a personal GitHub repository, in a **discreet**, **automated**, and **confidential** way. It replays your commits in an anonymized form, never copying any source code.
+1. Ensure you have [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and
+   [Node.js](https://nodejs.org/en/download/) installed on your machine.
+2. Install GitVeil globally:
+   ```bash
+   npm install git-veil -g
+   ```
+3. Create [a private repository](https://github.com/new) for your contribution activity (e.g., `my-activity`).
+4. Setup your target repository:
+   ```bash
+   mkdir my-activity && cd my-activity
+   git init
+   git remote add origin git@github.com:<USERNAME>/my-activity.git
+   git branch -M main
+   gitveil config --init
+   ```
+5. Record and sync your activity:
+   ```bash
+   cd /path/to/your/work/repo
+   gitveil record
+   gitveil push
+   ```
 
-
-## Why choose GitVeil ?
-
-- ✅ **Visibility**: Keep your GitHub contribution graph active, even for private work.
-- 🔒 **Privacy**: No code is copied, everything stays local, 100% private.
-- 🧘 **Simplicity**: Quick installation, guided configuration, minimalist usage.
-
-
-## See GitVeil in action:
-
-**Before GitVeil :**
-
-![Before](https://github.com/tardieunicolas/gitveil/blob/main/assets/gitpulse-demo-2024.png)
-
-**After GitVeil :**
-
-![After](https://github.com/tardieunicolas/gitveil/blob/main/assets/gitpulse-demo-2024-after.png)
-
-Your contribution graph stays active without exposing any private work!
-
-
-## 📦 Installation
-
-Install GitVeil globally using npm:
-
-```bash
-npm install git-veil -g
-```
-
-Verify the installation:
-
-```bash
-gitveil --version
-```
-
-
-
-## 🚀 Quick Start
-
-### 1. Setup Target Repository
-
-```bash
-mkdir my-target-repo && cd my-target-repo
-git init && git remote add origin https://github.com/yourusername/my-target-repo.git
-git branch -M main && git push -u origin main
-gitveil config --init
-```
-
-### 2. Record & Sync Activity
-
-```bash
-cd /path/to/your/work/repo
-gitveil record && gitveil push
-```
-
-**Done!** Your GitHub graph now reflects your private work.
-
-
+**Done!** Now your GitHub graph reflects your private work.
 
 ## Main commands
 
@@ -85,38 +50,13 @@ gitveil record && gitveil push
 - `gitveil guide`: Show quick start guide
 
 
-
-## Privacy
-
-![Privacy](https://img.shields.io/badge/100%25%20private-0%25%20code%20shared-blue)
-
-- No code is ever copied
-- No network access to professional repositories
-- Everything happens locally, on your machine
-
-
-
 ## How It Works
 
 1. **Scan**: Reads commit dates from your repositories (no code access)
 2. **Generate**: Creates anonymous commits in your target repository
 3. **Sync**: Pushes to GitHub to update your contribution graph
 
-**Privacy**: Only commit timestamps are processed - your code never leaves your machine.
-
-
-## 🛠 Troubleshooting
-
-
-| Issue | Solution |
-|-------|----------|
-| **"No Git repository found"** | • Run command from inside a Git repository<br>• Check if `.git` folder exists<br>• Run `git status` to verify Git initialization |
-| **"No commits found for email"** | • Check `git config user.email` matches your commits<br>• Use `git log --author="your@email.com"` to verify<br>• Update email with `git config user.email "correct@email.com"` |
-| **"Target repository not found"** | • Ensure target path exists and is Git-initialized<br>• Run `gitveil config --init` to set correct path<br>• Verify remote with `git remote -v` |
-| **"Permission denied (publickey)"** | • Check SSH key setup: `ssh -T git@github.com`<br>• Add SSH key to GitHub or use HTTPS instead<br>• Run `git config --global credential.helper store` |
-| **"Nothing to commit"** | • Ensure you have commits in source repository<br>• Check date range with `gitveil config`<br>• Verify email configuration matches commit author |
-| **"Configuration issues"** | • Run `gitveil config --init`<br>• Check file permissions in target directory<br>• Verify paths are absolute and accessible |
-
+**Privacy Guarantee**: Only commit timestamps are processed - your code never leaves your machine, no network access to your professional repositories.
 
 ---
 
@@ -140,18 +80,19 @@ A: Yes. Use `gitveil status` to see pending commits.
 **Q: How does email detection work?**  
 A: Uses `git config user.email` from each repository automatically.
 
-### Getting Help
+
+### Having issues? 
+Check our comprehensive troubleshooting guide:
+
+**[→ View Troubleshooting Guide](TROUBLESHOOTING.md)**
 
 ---
 
-## 💬 Support
+## Support This Project
 
-If **GitVeil** has been helpful to you, consider supporting its continued development:
+If you rely on this tool and find it useful, please consider supporting it. Maintaining an open source project takes time, and a cup of coffee would be greatly appreciated!
 
-[![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-☕-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://coff.ee/nicolastardieu)
-
-Your support helps keep this project alive and motivates further improvements.
-Even a small gesture makes a big difference — thank you! 🙏
+<a href="https://coff.ee/nicolastardieu" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
 ---
 
@@ -159,9 +100,15 @@ Even a small gesture makes a big difference — thank you! 🙏
 
 Have questions, suggestions, or feedback? I'd love to hear from you!
 
-[![Email](https://img.shields.io/badge/Email-Contact%20me-blue?style=for-the-badge&logo=gmail&logoColor=white)](mailto:ntardieu.contact@gmail.com?subject=GitVeil%20-%20Question/Suggestion)
+[Contact me by email](mailto:ntardieu.contact@gmail.com?subject=GitVeil%20-%20Question/Suggestion)
 
-Whether it's a bug report, feature request, or just a quick question, don't hesitate to reach out.
+---
+
+## Disclaimer
+
+This tool was created to address the unfair practice of judging developers solely by their GitHub contribution graphs. While maintaining authentic professional integrity is always encouraged, your true skills shouldn't be measured by green squares on a chart. GitVeil helps ensure your valuable private work gets the recognition it deserves.
+
+**GitHub Terms of Service**: By using GitVeil, you acknowledge that you are responsible for ensuring your usage complies with [GitHub's Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service) and [Acceptable Use Policies](https://docs.github.com/en/site-policy/acceptable-use-policies/github-acceptable-use-policies). GitVeil creates commits based on your actual work activity and does not generate fake or misleading contribution data. Users should use this tool responsibly and in accordance with GitHub's community guidelines.
 
 ---
 
