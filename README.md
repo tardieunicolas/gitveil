@@ -11,7 +11,7 @@
 
 ![Before](https://github.com/tardieunicolas/gitveil/blob/main/assets/how-it-work.gif)
 
-## 🆕 What's New in v1.0.3
+## 🆕 What's New in v1.0.4
 
 > **[View Full Changelog](CHANGELOG.md)** 
 
